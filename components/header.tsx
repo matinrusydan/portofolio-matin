@@ -7,8 +7,8 @@ export function Header() {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50",
-        "h-16 px-4 md:px-8",
+        "fixed inset-x-0 top-0 z-50 rounded-full mx-36 flex-row leading-3 tracking-normal bg-muted-foreground opacity-75 text-background",
+        "px-4 md:px-9 h-10",
         "flex items-center justify-between",
         // translucent top bar for subtle separation
         "backdrop-blur-[2px]",
@@ -23,8 +23,8 @@ export function Header() {
       >
         {/* Choose either label freely */}
         <span className="sr-only">MATBREWDEV</span>
-        <span aria-hidden className="select-none">
-          MVA
+        <span aria-hidden className="select-none text-primary">
+          MATBREW
         </span>
       </Link>
 
@@ -32,17 +32,17 @@ export function Header() {
       <nav>
         <ul className="flex items-center gap-5 md:gap-8 text-sm text-muted-foreground">
           <li>
-            <Link href="#" className="hover:text-foreground transition-colors">
+            <Link href="#" className="hover:text-foreground transition-colors text-primary">
               Home
             </Link>
           </li>
           <li>
-            <Link href="#projects" className="hover:text-foreground transition-colors">
+            <Link href="#projects" className="hover:text-foreground transition-colors text-primary">
               Projects
             </Link>
           </li>
           <li>
-            <Link href="#certificates" className="hover:text-foreground transition-colors">
+            <Link href="#certificates" className="hover:text-foreground transition-colors text-primary">
               Certificates
             </Link>
           </li>

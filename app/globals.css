@@ -110,39 +110,37 @@
 
 /* God-rays/spotlight background utility */
 .ray-bg {
-  background: radial-gradient(
-      1200px 500px at 50% -10%,
-      rgba(255, 255, 255, 0.14),
-      rgba(255, 255, 255, 0.04) 30%,
-      rgba(255, 255, 255, 0.0) 60%
-    ), radial-gradient(800px 300px at 50% 0%, rgba(118, 228, 247, 0.12), rgba(118, 228, 247, 0.0) 70%),
-    var(--color-background);
   position: absolute;
   inset: 0;
   overflow: hidden;
+  background: radial-gradient(
+    ellipse at 50% -10%, /* Sumber cahaya sedikit dinaikkan */
+    rgba(255, 255, 255, 0.15),
+    transparent 70% /* Gradasi dasar dibuat lebih panjang */
+  );
 }
+
 .ray-bg::before {
   content: "";
   position: absolute;
-  inset: -10% -20% 0 -20%;
-  top: -8%;
+  inset: 0;
+  top: -10%;
   background: repeating-conic-gradient(
     from 180deg at 50% 0%,
-    rgba(255, 255, 255, 0.08) 0deg 3deg,
-    transparent 3deg 12deg
+    rgba(255, 255, 255, 0.12) 0deg 3deg,  /* Sinar dibuat sedikit lebih tebal dan terang */
+    transparent 3deg 12deg /* Jarak antar sinar sedikit dikurangi */
   );
-  opacity: 0.25;
-  filter: blur(8px);
-  mask: radial-gradient(1200px 500px at 50% 0%, black 0%, transparent 75%);
-}
-.ray-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(1600px 800px at 50% 20%, rgba(255, 255, 255, 0.08), transparent 60%);
-  mix-blend-mode: screen;
-  opacity: 0.5;
-  pointer-events: none;
+  opacity: 0.35;
+  
+  /* Untuk membuatnya lebih TAJAM */
+  filter: blur(5px); /* Nilai blur dikurangi agar lebih tajam */
+  
+  /* Untuk membuatnya lebih PANJANG */
+  mask: radial-gradient(
+    ellipse 60% 95% at 50% 0%, /* Elips dibuat sangat panjang ke bawah (95%) */
+    black 20%,
+    transparent 80% /* Titik transparansi digeser ke bawah */
+  );
 }
 /* Buttons: ensure enough contrast on dark bg */
 button {
@@ -155,3 +153,52 @@ h3 {
   letter-spacing: -0.015em;
 }
 /* End spotlight styles */
+
+
+.technology-text,
+.enthusiast-text {
+  /* Properti Font Bersama */
+  font-family: 'Poppins', sans-serif; /* Pastikan font Poppins sudah diimpor di layout.tsx Anda */
+  font-weight: 600; /* SemiBold */
+  font-size: 128px;
+  letter-spacing: -0.02em; /* -2% */
+  line-height: 80px;
+  white-space: nowrap; /* Mencegah teks turun baris */
+}
+
+.technology-text {
+  /* Warna Gradien untuk 'Technology' */
+  background: linear-gradient(to right, #000000 0%, #666666 67%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  
+  /* Atur posisi sebagai lapisan belakang */
+  position: relative;
+  z-index: 1;
+}
+
+.enthusiast-text {
+  /* Warna solid untuk 'Enthusiast' */
+  color: #FFFFFF;
+  
+  /* KUNCI EFEK IRISAN: Atur posisi agar tumpang tindih di tengah */
+  position: absolute;
+  z-index: 2; /* Pastikan ini di lapisan depan */
+  left: 50%;
+  top: 50%;
+  transform: translate(-30%, -50%); /* Geser ke kiri (-30%) dan pusatkan vertikal (-50%) */
+}
+
+/* Penyesuaian untuk layar lebih kecil (Mobile) */
+@media (max-width: 768px) {
+  .technology-text,
+  .enthusiast-text {
+    font-size: 52px; /* Ukuran font diperkecil agar tidak tumpang tindih berlebihan */
+    line-height: 40px;
+  }
+  
+  .enthusiast-text {
+     transform: translate(-35%, -50%); /* Sesuaikan pergeseran untuk mobile */
+  }
+}
