@@ -166,17 +166,22 @@
   overflow: hidden;
   background:
     radial-gradient(
-      ellipse 80% 120% at var(--mouse-x) -10%,
-      rgba(255, 255, 255, 0.25),
+      ellipse 85% 120% at var(--mouse-x) -10%,
+      rgba(255, 255, 255, 0.3),
       transparent 70%
     ),
     repeating-conic-gradient(
       from 180deg at var(--mouse-x) -5%,
-      rgba(255, 255, 255, 0.12) 0deg 3deg,
-      transparent 3deg 9deg
+      rgba(255, 255, 255, 0.15) 0deg 12deg,
+      transparent 12deg 27deg
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.15),
+      transparent 60%
     );
   mix-blend-mode: screen;
-  filter: blur(4px);
+  filter: blur(7px);
   mask-image: radial-gradient(
     ellipse 90% 100% at 50% 0%,
     black 40%,
