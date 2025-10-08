@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -40,14 +42,13 @@
 }
 
 .dark {
-  --background: oklch(0.15 0 0); /* near-black */
-  --foreground: oklch(0.985 0 0); /* white */
-  --primary: oklch(0.985 0 0); /* white button */
-  --primary-foreground: oklch(0.17 0 0); /* near-black text on primary */
-  --muted-foreground: oklch(0.75 0 0); /* soft gray */
-  --accent: oklch(0.78 0.07 200); /* subtle cyan for glow */
+  --background: oklch(0.15 0 0); 
+  --foreground: oklch(0.985 0 0); 
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.17 0 0);
+  --muted-foreground: oklch(0.75 0 0);
+  --accent: oklch(0.78 0.07 200);
   --accent-foreground: oklch(0.15 0 0);
-  /* keep other tokens aligned to minimal palette */
   --card: var(--background);
   --card-foreground: var(--foreground);
   --secondary: oklch(0.24 0 0);
@@ -108,15 +109,22 @@
   }
 }
 
+.font-poppins {
+  font-family: 'Poppins', sans-serif;
+}
+.font-manrope{
+  font-family: 'Manrope', sans-serif;
+}
+
 /* God-rays/spotlight background utility */
 .ray-bg {
   position: absolute;
   inset: 0;
   overflow: hidden;
   background: radial-gradient(
-    ellipse at 50% -10%, /* Sumber cahaya sedikit dinaikkan */
+    ellipse at 50% -10%, 
     rgba(255, 255, 255, 0.15),
-    transparent 70% /* Gradasi dasar dibuat lebih panjang */
+    transparent 70% 
   );
 }
 
@@ -127,19 +135,18 @@
   top: -10%;
   background: repeating-conic-gradient(
     from 180deg at 50% 0%,
-    rgba(255, 255, 255, 0.12) 0deg 3deg,  /* Sinar dibuat sedikit lebih tebal dan terang */
-    transparent 3deg 12deg /* Jarak antar sinar sedikit dikurangi */
+    rgba(255, 255, 255, 0.12) 0deg 3deg,  
+    transparent 3deg 12deg 
   );
   opacity: 0.35;
   
-  /* Untuk membuatnya lebih TAJAM */
-  filter: blur(5px); /* Nilai blur dikurangi agar lebih tajam */
+
+  filter: blur(5px); 
   
-  /* Untuk membuatnya lebih PANJANG */
   mask: radial-gradient(
-    ellipse 60% 95% at 50% 0%, /* Elips dibuat sangat panjang ke bawah (95%) */
+    ellipse 60% 95% at 50% 0%, 
     black 20%,
-    transparent 80% /* Titik transparansi digeser ke bawah */
+    transparent 80% 
   );
 }
 /* Buttons: ensure enough contrast on dark bg */
@@ -154,51 +161,59 @@ h3 {
 }
 /* End spotlight styles */
 
-
 .technology-text,
 .enthusiast-text {
-  /* Properti Font Bersama */
-  font-family: 'Poppins', sans-serif; /* Pastikan font Poppins sudah diimpor di layout.tsx Anda */
-  font-weight: 600; /* SemiBold */
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
   font-size: 128px;
-  letter-spacing: -0.02em; /* -2% */
-  line-height: 80px;
-  white-space: nowrap; /* Mencegah teks turun baris */
+  letter-spacing: -0.02em;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: visible;
+  position: relative;
 }
 
 .technology-text {
-  /* Warna Gradien untuk 'Technology' */
-  background: linear-gradient(to right, #000000 0%, #666666 67%);
+  background: linear-gradient(
+    to bottom,
+    #212121 0%,
+    #666666 67%,
+    #666666 100%
+  );
   -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   background-clip: text;
   color: transparent;
-  
-  /* Atur posisi sebagai lapisan belakang */
-  position: relative;
   z-index: 1;
+
+  /* --- stabilitas rendering --- */
+  contain: paint;
+  will-change: transform;
+  backface-visibility: hidden;
+  isolation: isolate;
+
+  /* --- jarak & irisan --- */
+  transform: translateY(22px);  /* geser sedikit ke atas */
+  margin-bottom: -42px;        /* bikin lebih rapet */
 }
 
 .enthusiast-text {
-  /* Warna solid untuk 'Enthusiast' */
-  color: #FFFFFF;
-  
-  /* KUNCI EFEK IRISAN: Atur posisi agar tumpang tindih di tengah */
-  position: absolute;
-  z-index: 2; /* Pastikan ini di lapisan depan */
-  left: 50%;
+  position: relative;
+  z-index: 2;
   top: 50%;
-  transform: translate(-30%, -50%); /* Geser ke kiri (-30%) dan pusatkan vertikal (-50%) */
+  transform: translate(-50%, -40%);
 }
 
-/* Penyesuaian untuk layar lebih kecil (Mobile) */
+
 @media (max-width: 768px) {
-  .technology-text,
-  .enthusiast-text {
-    font-size: 52px; /* Ukuran font diperkecil agar tidak tumpang tindih berlebihan */
+  .technology-text, .enthusiast-text {
+    font-size: 52px;
     line-height: 40px;
   }
-  
-  .enthusiast-text {
-     transform: translate(-35%, -50%); /* Sesuaikan pergeseran untuk mobile */
+}
+
+@media (min-width: 1280px) {
+  .technology-text {
+    transform: translateY(18px);
   }
 }

@@ -1,53 +1,65 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { cn } from "@/lib/utils"
+import Link from "next/link";
+import Image from "next/image";
 
 export function Header() {
   return (
-    <header
-      className={cn(
-        "fixed inset-x-0 top-0 z-50 rounded-full mx-36 flex-row leading-3 tracking-normal bg-muted-foreground opacity-75 text-background",
-        "px-4 md:px-9 h-10",
-        "flex items-center justify-between",
-        // translucent top bar for subtle separation
-        "backdrop-blur-[2px]",
-      )}
-      aria-label="Primary"
-    >
-      {/* Branding */}
-      <Link
-        href="#"
-        className="font-semibold tracking-wide text-sm md:text-base text-primary/90 hover:text-primary transition-colors"
-        aria-label="Matbrewdev Home"
-      >
-        {/* Choose either label freely */}
-        <span className="sr-only">MATBREWDEV</span>
-        <span aria-hidden className="select-none text-primary">
-          MATBREW
-        </span>
-      </Link>
+    <header className="fixed top-0 left-0 w-full flex justify-center items-center h-[150px] z-50">
+      <nav className="h-[50px] w-full max-w-[900px] flex justify-between items-center px-10 rounded-[30px] bg-[rgba(255,255,255,0.2)] backdrop-blur-md">
+        {/* LOGO */}
+        <div className="flex items-center">
+          <Image
+            src="/logo-matbrew.png"
+            alt="Matbrew Logo"
+            width={245.8}
+            height={20}
+            className="h-[20px] w-auto object-contain"
+            priority
+          />
+        </div>
 
-      {/* Navigation */}
-      <nav>
-        <ul className="flex items-center gap-5 md:gap-8 text-sm text-muted-foreground">
+        {/* MENU ITEMS */}
+        <ul className="flex items-center justify-center gap-8 h-[27px]">
           <li>
-            <Link href="#" className="hover:text-foreground transition-colors text-primary">
+            <Link
+              href="#home"
+              className="text-white text-[16px] font-poppins leading-[27px]"
+            >
               Home
             </Link>
           </li>
           <li>
-            <Link href="#projects" className="hover:text-foreground transition-colors text-primary">
-              Projects
+            <Link
+              href="#about"
+              className="text-white text-[16px] font-poppins leading-[27px]"
+            >
+              About
             </Link>
           </li>
           <li>
-            <Link href="#certificates" className="hover:text-foreground transition-colors text-primary">
-              Certificates
+            <Link
+              href="#contact"
+              className="text-white text-[16px] font-poppins leading-[27px]"
+            >
+              Contact
             </Link>
           </li>
         </ul>
+
+        {/* GITHUB LOGO */}
+        <div className="flex items-center justify-center w-[37px]">
+          <Link href="https://github.com/matinrusydan" target="_blank" aria-label="GitHub">
+            <Image
+              src="/github-logo.svg"
+              alt="GitHub Logo"
+              width={37}
+              height={37}
+              className="w-[37px] h-auto object-contain"
+            />
+          </Link>
+        </div>
       </nav>
     </header>
-  )
+  );
 }
