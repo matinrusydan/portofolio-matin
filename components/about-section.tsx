@@ -1,5 +1,8 @@
 // components/about-section.tsx
 
+'use client';
+
+import Atropos from 'atropos/react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button'; // Menggunakan komponen Button yang sudah ada
 
@@ -11,17 +14,21 @@ interface Profile {
   about?: string;
 }
 
-// Sub-komponen untuk gambar, agar kode lebih rapi
+// Sub-komponen untuk gambar, sekarang dengan efek Atropos
 const HeroImage = ({ profile }: { profile: Profile }) => {
   const imageUrl = profile?.photo ? `/${profile.photo}` : '/foto-matin.png';
   const altText = profile?.name || 'Matin Rusydan';
 
   return (
-    <div 
+    <Atropos
       className="
-        flex-none 
+        flex-none
         animate-in fade-in slide-in-from-left-12 duration-700
+        w-[240px] h-[300px] md:w-[320px] md:h-[400px]
+        rounded-[30px] overflow-hidden
       "
+      activeOffset={40}
+      shadowScale={1.05}
     >
       <Image
         src={imageUrl}
@@ -30,12 +37,12 @@ const HeroImage = ({ profile }: { profile: Profile }) => {
         height={400}
         priority
         className="
-          object-cover rounded-[20px] 
-          shadow-[0_20px_60px_rgba(188,7,212,0.3)]
-          w-[240px] h-[300px] md:w-[320px] md:h-[400px]
+          object-cover rounded-[30px]
+          shadow-[0_20px_60px_rgba(255,255,255,0.2)]
+          w-full h-full
         "
       />
-    </div>
+    </Atropos>
   );
 };
 
