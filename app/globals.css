@@ -122,6 +122,39 @@
 button {
   border-radius: var(--radius-md);
 }
+
+/* Text shadow for CardNav readability over LightRays */
+.logo, .card-nav-link, .card-nav-label {
+  text-shadow: 0 0 10px rgba(0,0,0,0.6);
+}
+
+/* Improved line height for Hero text */
+h1, p {
+  line-height: 1.2;
+}
+
+/* Modern clean styling for Technology text */
+.modern-hero-text {
+  display: inline-block;
+  background: linear-gradient(to bottom, #ffffff 0%, #cccccc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.04em;
+  font-weight: 800;
+  text-shadow:
+    0 1px 2px rgba(255, 255, 255, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.3),
+    0 0 12px rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.modern-hero-text:hover {
+  text-shadow:
+    0 1px 3px rgba(255, 255, 255, 0.6),
+    0 2px 8px rgba(255, 255, 255, 0.4),
+    0 0 16px rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
 /* Typography helpers per brief */
 h1,
 h2,

@@ -1,7 +1,6 @@
 "use client";
 
 import LightRays from "@/components/LightRays.jsx";
-import { Header } from "@/components/header";
 import { Hero } from "@/components/hero";
 import { useRef, useEffect, useState } from "react";
 
@@ -40,7 +39,6 @@ export function IntroSection() {
           />
         </div>
       )}
-      <Header />
       <Hero />
     </section>
   );
