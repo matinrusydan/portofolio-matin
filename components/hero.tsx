@@ -2,17 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useRef } from 'react';
-import Particles from 'react-tsparticles';
-import { loadSlim } from 'tsparticles-slim';
-import type { Engine } from 'tsparticles';
+import Particles from '@tsparticles/react';
+import { loadSlim } from '@tsparticles/slim';
+import type { Engine } from '@tsparticles/engine';
+import { tsParticles } from '@tsparticles/engine';
 import TextType from "@/components/TextType";
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-
-  const particlesInit = async (engine: Engine) => {
-    await loadSlim(engine);
-  };
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
@@ -39,6 +36,14 @@ export function Hero() {
       }
     };
   }, []); // Array dependensi kosong agar hanya berjalan sekali
+
+  useEffect(() => {
+    const initParticles = async () => {
+      await loadSlim(tsParticles);
+    };
+    initParticles();
+  }, []);
+
   return (
       <section
         ref={sectionRef} // PASTIKAN REF INI TERPASANG DI SINI
@@ -49,12 +54,11 @@ export function Hero() {
         <div className="absolute inset-0 -z-20 particles-mask">
           <Particles
             id="tsparticles"
-            init={particlesInit}
             options={{
               fullScreen: { enable: false },
               background: { color: { value: "transparent" } },
               particles: {
-                number: { value: 60, density: { enable: true, area: 800 } },
+                number: { value: 60 },
                 color: { value: "#ffffff" },
                 shape: { type: "circle" },
                 opacity: { value: { min: 0.05, max: 0.25 }, animation: { enable: true, speed: 0.2 } },
@@ -102,9 +106,9 @@ export function Hero() {
         <div className="mt-8">
         <Button
           size="lg"
-          className="rounded-[50px] !rounded-[50px] px-10 md:px-12 md:py-5"
+          className="rounded-[50px] px-10 md:px-12 md:py-5"
         >
-          Lets Talk
+          Let's Talk
         </Button>
         </div>
     </section>
