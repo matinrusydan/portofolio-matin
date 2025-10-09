@@ -9,34 +9,6 @@ import { tsParticles } from '@tsparticles/engine';
 import TextType from "@/components/TextType";
 
 export function Hero() {
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      if (sectionRef.current) {
-        const { clientX } = event;
-        const rect = sectionRef.current.getBoundingClientRect();
-        // Hitung posisi mouse relatif terhadap elemen section, bukan window
-        const mouseXPercent = ((clientX - rect.left) / rect.width) * 100;
-        // Terapkan variabel CSS ke elemen itu sendiri
-        sectionRef.current.style.setProperty('--mouse-x', `${mouseXPercent.toFixed(2)}%`);
-      }
-    };
-
-    // Dengarkan event mousemove pada elemen section itu sendiri
-    const currentSection = sectionRef.current;
-    if (currentSection) {
-      currentSection.addEventListener('mousemove', handleMouseMove);
-    }
-
-    return () => {
-      // Hapus event listener saat komponen di-unmount
-      if (currentSection) {
-        currentSection.removeEventListener('mousemove', handleMouseMove);
-      }
-    };
-  }, []); // Array dependensi kosong agar hanya berjalan sekali
-
   useEffect(() => {
     const initParticles = async () => {
       await loadSlim(tsParticles);
@@ -45,12 +17,11 @@ export function Hero() {
   }, []);
 
   return (
-      <section
-        ref={sectionRef} // PASTIKAN REF INI TERPASANG DI SINI
-        className="relative isolate flex min-h-screen flex-col items-center justify-center text-center px-6 md:px-8 pt-32 md:pt-40 overflow-hidden" // Tambahkan overflow-hidden
+      <div
+        className="relative flex flex-col items-center justify-center text-center px-6 md:px-8 min-h-[100vh] overflow-visible bg-transparent"
         aria-label="Intro"
       >
-        <div className="pointer-events-none absolute inset-0 -z-10 god-rays" aria-hidden="true" />
+        {/* LightRays dipindahkan ke Header agar efek muncul dari atas halaman */}
         <div className="absolute inset-0 -z-20 particles-mask">
           <Particles
             id="tsparticles"
@@ -82,8 +53,6 @@ export function Hero() {
           as="h1"
           text={[
             "Hi, I am Matin Rusydan",
-            "An Aspiring Software Engineer",
-            "A Technology Enthusiast"
           ]}
           className="font-manrope text-[60px] md:text-[80px] font-normal tracking-[-0.02em] text-primary leading-none text-center h-[1.2em] md:h-auto"
           typingSpeed={75}
@@ -111,6 +80,6 @@ export function Hero() {
           Let's Talk
         </Button>
         </div>
-    </section>
+    </div>
   )
 }
