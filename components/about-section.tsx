@@ -1,12 +1,9 @@
-// components/about-section.tsx
-
 'use client';
 
-import Atropos from 'atropos/react';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button'; // Menggunakan komponen Button yang sudah ada
+import { Button } from '@/components/ui/button';
+import ProfileCard from './ProfileCard';
 
-// Definisikan tipe data untuk props agar lebih aman dan jelas
+// Definisikan tipe data untuk props
 interface Profile {
   name?: string;
   photo?: string;
@@ -14,81 +11,62 @@ interface Profile {
   about?: string;
 }
 
-// Sub-komponen untuk gambar, sekarang dengan efek Atropos
-const HeroImage = ({ profile }: { profile: Profile }) => {
-  const imageUrl = profile?.photo ? `/${profile.photo}` : '/foto-matin.png';
-  const altText = profile?.name || 'Matin Rusydan';
-
-  return (
-    <Atropos
-      className="
-        flex-none
-        animate-in fade-in slide-in-from-left-12 duration-700
-        w-[240px] h-[300px] md:w-[320px] md:h-[400px]
-        rounded-[30px] overflow-hidden
-      "
-      activeOffset={40}
-      shadowScale={1.05}
-    >
-      <Image
-        src={imageUrl}
-        alt={altText}
-        width={320}
-        height={400}
-        priority
-        className="
-          object-cover rounded-[30px]
-          shadow-[0_20px_60px_rgba(255,255,255,0.2)]
-          w-full h-full
-        "
-      />
-    </Atropos>
-  );
-};
-
 // Komponen utama untuk seksi "About"
 export function AboutSection({ profile = {} }: { profile?: Profile }) {
   // Nilai default jika data profile tidak tersedia
   const defaultProfile = {
     name: 'Matin Rusydan',
-    title: 'Data Engineer',
-    about: 'Passionate about transforming raw data into meaningful insights. With years of experience in data engineering, I specialize in building robust data pipelines, optimizing database performance, and creating scalable solutions that drive business growth.'
+    photo: '/foto-matin.png',
+    title: 'Aspiring Software Engineer | Technology Enthusiast',
+    about: 'A passionate developer exploring software engineering, web development, and data science to build impactful solutions.',
   };
 
   return (
-    <section 
-      className="
-        flex items-center justify-center min-h-screen px-6 py-20 md:px-8
-      "
+    <section
+      id="about"
+      className="flex flex-col items-center justify-center min-h-screen px-6 py-20 md:px-8 bg-black overflow-visible"
     >
       <div 
         className="
-          container mx-auto flex flex-col md:flex-row 
+          container mx-auto flex flex-col-reverse md:flex-row 
           items-center justify-center gap-10 lg:gap-20
         "
       >
-        {/* Kolom Gambar (kiri di desktop) */}
-        <HeroImage profile={profile} />
-
-        {/* Kolom Teks (kanan di desktop) */}
-        <div className="flex-1 text-center md:text-left max-w-2xl">
-          <h1 className="font-manrope text-4xl md:text-5xl font-bold tracking-tight text-primary">
-            About {profile?.name || defaultProfile.name}
+        {/* Kolom Teks (kiri di desktop) */}
+        <div className="flex-1 text-center md:text-left max-w-xl animate-in fade-in slide-in-from-right-12 duration-700">
+          <h1 className="font-manrope text-4xl md:text-5xl font-bold tracking-tight text-white">
+            About Me
           </h1>
-          <h2 className="mt-2 font-poppins text-xl md:text-2xl font-semibold text-foreground">
-            {profile?.title || defaultProfile.title}
-          </h2>
-          <p className="mt-4 text-base md:text-lg text-pretty text-muted-foreground">
+          <p className="mt-4 text-base md:text-lg text-pretty text-gray-400">
             {profile?.about || defaultProfile.about}
           </p>
           <Button
             size="lg"
-            className="mt-8 rounded-full px-10" // Menggunakan rounded-full untuk efek pil
+            className="mt-8 rounded-full px-10 bg-white text-black hover:bg-gray-200"
+            onClick={() => {
+              document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+            }}
           >
-            About Me
+            Contact Me
           </Button>
+        </div>
+
+        {/* PERBAIKAN: Bungkus ProfileCard dengan div yang memiliki ukuran pasti */}
+        <div className="w-full max-w-[320px] md:max-w-[380px] animate-in fade-in slide-in-from-left-12 duration-700">
+          <ProfileCard
+            name={profile?.name || defaultProfile.name}
+            title={profile?.title || defaultProfile.title}
+            handle="matinrusydan"
+            status="Online"
+            contactText="Contact Me"
+            avatarUrl={profile?.photo || defaultProfile.photo}
+            onContactClick={() => {
+              document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+          />
         </div>
       </div>
     </section>
   );
 }
+

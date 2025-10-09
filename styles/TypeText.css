@@ -1,0 +1,20 @@
+.text-type {
+  display: inline-flex; /* Menggunakan flex agar cursor sejajar */
+  align-items: center; /* Menjaga vertikal alignment */
+  white-space: pre-wrap;
+  min-height: 1.2em; /* Mencegah layout shift saat teks kosong */
+}
+
+.text-type__content {
+  /* Konten teks akan di-render di sini */
+}
+
+.text-type__cursor {
+  margin-left: 0.1em; /* Jarak cursor dari teks */
+  display: inline-block;
+  opacity: 1;
+}
+
+.text-type__cursor--hidden {
+  display: none;
+}

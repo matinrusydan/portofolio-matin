@@ -5,6 +5,7 @@ import React, { useEffect, useRef } from 'react';
 import Particles from 'react-tsparticles';
 import { loadSlim } from 'tsparticles-slim';
 import type { Engine } from 'tsparticles';
+import TextType from "@/components/TextType";
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -73,9 +74,18 @@ export function Hero() {
           />
         </div>
         {/* Headings */}
-        <h1 className="font-manrope text-[80px] font-normal tracking-[-0.02em] text-primary leading-none">
-          HI, I am Matin Rusydan
-        </h1>
+        <TextType
+          as="h1"
+          text={[
+            "Hi, I am Matin Rusydan",
+            "An Aspiring Software Engineer",
+            "A Technology Enthusiast"
+          ]}
+          className="font-manrope text-[60px] md:text-[80px] font-normal tracking-[-0.02em] text-primary leading-none text-center h-[1.2em] md:h-auto"
+          typingSpeed={75}
+          deletingSpeed={50}
+          pauseDuration={2000}
+        />
         <div className="relative mt-3 text-center inline-block">
           <span className="technology-text block">
             Technology
