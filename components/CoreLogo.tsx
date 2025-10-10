@@ -1,27 +1,44 @@
-import type React from "react"
+// File: CoreLogo.tsx
+
+import React from 'react';
 
 interface CoreLogoProps {
-  position: { x: number; y: number }
+  position: { x: number; y: number };
 }
 
 const CoreLogo: React.FC<CoreLogoProps> = ({ position }) => {
+  // Ukuran grup pembungkus (wrapper) kita anggap 100x100, jadi offsetnya -50
+  const wrapperSize = 100;
+
+  // UBAH DI SINI: Ukuran logo diperbesar dari 50 menjadi 80
+  const logoSize = 200;
+
+  // Hitung posisi x dan y agar logo tetap di tengah wrapper
+  const logoOffset = (wrapperSize - logoSize) / 2;
+
   return (
-    <g transform={`translate(${position.x - 50}, ${position.y - 50})`}>
-      {/* Glow effect */}
-      <circle
-        cx="50"
-        cy="50"
-        r="60"
+    <g transform={`translate(${position.x - (wrapperSize / 2)}, ${position.y - (wrapperSize / 2)})`}>
+      {/* Lingkaran luar sebagai bingkai */}
+      {/* <circle
+        cx={wrapperSize / 2}
+        cy={wrapperSize / 2}
+        r="60" // Radius lingkaran bisa disesuaikan jika perlu
         fill="none"
         stroke="#ffffff"
-        strokeWidth="2"
-        opacity="0.3"
-        filter="url(#glow-filter)"
+        strokeWidth="1.5"
+        opacity="0.2"
+      /> */}
+      {/* Gambar logo utama */}
+      <image
+        href="/logo-matbrew.svg"
+        x={logoOffset}
+        y={logoOffset}
+        width={logoSize}
+        height={logoSize}
+        className="core-logo"
       />
-      {/* Logo placeholder - replace with actual SVG */}
-      <image href="/logo-matbrew.svg" x="25" y="25" width="50" height="50" className="core-logo" />
     </g>
-  )
-}
+  );
+};
 
-export default CoreLogo
+export default CoreLogo;

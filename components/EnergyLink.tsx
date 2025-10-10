@@ -48,28 +48,19 @@ export default function EnergyLink({
     const converge1Ratio = 0.60
     const braidInset = 80
     
-    // --- Parameter Jalinan Kurva (Interlaced) ---
-    const ampBase = 14
-    // UBAH DI SINI: Kurangi jumlah gelombang agar lebih renggang (sebelumnya 3.5)
-    const cycles = 2.5 
+    const ampBase = 10
+    const cycles = 1
 
-    // Parameter untuk Amplitudo Dinamis/Organik
     const ampModulationCycles = 1.5 
     const ampModulationIntensity = 0.4
 
-    // TAHAP 1: Garis Lurus
     const p1 = { x: startPos.x + dir * (dx * straightLenRatio), y: startPos.y }
-
-    // TAHAP 2: Mengerucut Pertama
     const p2 = {
         x: startPos.x + dir * (dx * converge1Ratio),
         y: lerp(startPos.y, coreCenter.y, 0.5) 
     }
-
-    // TAHAP 3: Mengerucut Final
     const pBraidStart = { x: coreCenter.x - dir * braidInset, y: coreCenter.y }
 
-    // TAHAP 4: Jalinan Kurva dengan Amplitudo Dinamis
     const braidWidth = Math.abs(coreCenter.x - pBraidStart.x)
     const amplitude = ampBase * curvature
     const phase = index * (Math.PI / 2)
@@ -79,7 +70,15 @@ export default function EnergyLink({
     for (let i = 0; i <= samplesBraid; i++) {
       const t = i / samplesBraid
       const x = pBraidStart.x + dir * braidWidth * t
-      const taper = 1 - t * 0.25
+      
+      let taper;
+      if (t < 0.5) { 
+        const segmentT = t / 0.5;
+        taper = lerp(0.4, 0.6, segmentT);
+      } else {
+        const segmentT = (t - 0.5) / 0.5;
+        taper = lerp(0.8, 1.0, segmentT);
+      }
       
       const modulator = Math.sin(t * ampModulationCycles * 2 * Math.PI)
       const dynamicAmplitude = amplitude * (1 + modulator * ampModulationIntensity)
@@ -124,23 +123,37 @@ export default function EnergyLink({
   return (
     <g>
       <defs>
+        {/* PERUBAHAN 1: Gradien dibuat lebih cerah di tengah */}
         <linearGradient
           id={gradId}
-          x1={startPos.x}
-          y1={startPos.y}
-          x2={coreCenter.x}
-          y2={coreCenter.y}
+          x1={startPos.x} y1={startPos.y}
+          x2={coreCenter.x} y2={coreCenter.y}
           gradientUnits="userSpaceOnUse"
         >
           <stop offset="0%" stopColor={safeStartColor} />
-          <stop offset="100%" stopColor="#FFFFFF" />
+          <stop offset="85%" stopColor="#FFFFFF" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="1" />
         </linearGradient>
 
+        {/* PERUBAHAN 2: Filter yang lebih canggih untuk efek Glow & Glare */}
         <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur1" />
-          <feColorMatrix in="blur1" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="glow" />
+          {/* Lapisan 1: Cahaya (Glow) utama yang lebih lebar dan halus */}
+          <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur-wide" />
+          
+          {/* Lapisan 2: Cahaya (Glow) sekunder yang lebih fokus */}
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur-tight" />
+          
+          {/* Lapisan 3: Kilau (Glare) menggunakan pencahayaan */}
+          <feSpecularLighting in="blur-tight" surfaceScale="5" specularConstant=".75" specularExponent="20" lightingColor={safeStartColor} result="specularOut">
+            <fePointLight x="50" y="50" z="200" />
+          </feSpecularLighting>
+          <feComposite in="specularOut" in2="SourceAlpha" operator="in" result="specular-glare" />
+
+          {/* Gabungkan semua lapisan */}
           <feMerge>
-            <feMergeNode in="glow" />
+            <feMergeNode in="blur-wide" />
+            <feMergeNode in="blur-tight" />
+            <feMergeNode in="specular-glare" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
@@ -150,10 +163,10 @@ export default function EnergyLink({
         ref={pathRef}
         d={d}
         stroke={`url(#${gradId})`}
-        // UBAH DI SINI: Kurangi ketebalan garis (sebelumnya 3)
         strokeWidth={2}
         fill="none"
         opacity={0.9}
+        // Terapkan filter baru yang sudah canggih
         filter={`url(#${glowId})`}
       />
 

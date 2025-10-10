@@ -22,6 +22,16 @@ const SkillsNetwork = () => {
       .map(() => React.createRef<SVGImageElement | null>())
   }
 
+
+  
+
+  const colorPalette = [
+    '#e81cff', // Magenta
+    '#40c9ff', // Cyan
+    '#ff00a2', // Pink Terang
+    '#40c9ff', // Cyan (diulang untuk variasi)
+  ];
+
   // Use placeholders to guarantee previewed icons
   const leftIcons = [
     { name: "React", src: "/react-logo.png", color: "#61DAFB" },
@@ -36,6 +46,8 @@ const SkillsNetwork = () => {
     { name: "Laravel", src: "/laravel-logo.jpg", color: "#FF2D20" },
   ]
 
+
+  
   const centerPos = { x: dimensions.width / 2, y: dimensions.height / 2 }
 
   const getIconPosition = (side: "left" | "right", index: number) => {
@@ -94,7 +106,7 @@ const SkillsNetwork = () => {
               side="left"
               index={i}
               curvature={0.7}
-              iconColor={icon.color}
+              iconColor={colorPalette[i % colorPalette.length]} 
               debugMode={debugMode}
             />
           )
@@ -111,7 +123,7 @@ const SkillsNetwork = () => {
               side="right"
               index={i}
               curvature={0.7}
-              iconColor={icon.color}
+              iconColor={colorPalette[i % colorPalette.length]} 
               debugMode={debugMode}
             />
           )
