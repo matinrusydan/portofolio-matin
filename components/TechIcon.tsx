@@ -6,9 +6,10 @@ interface TechIconProps {
   side: 'left' | 'right';
 }
 
-const TechIcon: React.FC<TechIconProps> = ({ src, position, side }) => {
+const TechIcon = React.forwardRef<SVGImageElement | null, TechIconProps>(({ src, position, side }, ref) => {
   return (
     <image
+      ref={ref}
       href={src}
       x={position.x - 25}
       y={position.y - 25}
@@ -18,6 +19,8 @@ const TechIcon: React.FC<TechIconProps> = ({ src, position, side }) => {
       style={{ cursor: 'pointer' }}
     />
   );
-};
+});
+
+TechIcon.displayName = 'TechIcon';
 
 export default TechIcon;

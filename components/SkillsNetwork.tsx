@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
 import CoreLogo from './CoreLogo';
 import TechIcon from './TechIcon';
 import EnergyLink from './EnergyLink';
@@ -8,33 +9,48 @@ import EnergyLink from './EnergyLink';
 const SkillsNetwork = () => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+  const [debugMode, setDebugMode] = useState(true); // Toggle for debug markers
 
-  // Data ikon tidak berubah
+  // Refs for icons
+  const leftIconRefs = useRef<(React.RefObject<SVGImageElement | null>)[]>([]);
+  const rightIconRefs = useRef<(React.RefObject<SVGImageElement | null>)[]>([]);
+
+  // Initialize refs
+  if (leftIconRefs.current.length === 0) {
+    leftIconRefs.current = Array(4).fill(null).map(() => React.createRef<SVGImageElement | null>());
+    rightIconRefs.current = Array(4).fill(null).map(() => React.createRef<SVGImageElement | null>());
+  }
+
+  // Icon data
   const leftIcons = [
-    { name: 'React', src: '/react-icon.svg' },
-    { name: 'C++', src: '/cpp-icon.svg' },
-    { name: 'Python', src: '/python-icon.svg' },
-    { name: 'JavaScript', src: '/js-icon.svg' },
+    { name: 'React', src: '/react-icon.svg', index: 0 },
+    { name: 'C++', src: '/cpp-icon.svg', index: 1 },
+    { name: 'Python', src: '/python-icon.svg', index: 2 },
+    { name: 'JavaScript', src: '/js-icon.svg', index: 3 },
   ];
 
   const rightIcons = [
-    { name: 'Node.js', src: '/node-icon.svg' },
-    { name: 'TypeScript', src: '/ts-icon.svg' },
-    { name: 'Next.js', src: '/next-icon.svg' },
-    { name: 'Laravel', src: '/laravel-icon.svg' },
+    { name: 'Node.js', src: '/node-icon.svg', index: 0 },
+    { name: 'TypeScript', src: '/ts-icon.svg', index: 1 },
+    { name: 'Next.js', src: '/next-icon.svg', index: 2 },
+    { name: 'Laravel', src: '/laravel-icon.svg', index: 3 },
   ];
 
   const centerPos = { x: dimensions.width / 2, y: dimensions.height / 2 };
 
+  // Calculate icon positions
   const getIconPosition = (side: 'left' | 'right', index: number) => {
-    const spacing = dimensions.height / (leftIcons.length + 1);
+    const spacing = dimensions.height / 5;
     const y = spacing * (index + 1);
-    const x = side === 'left' ? 100 : dimensions.width - 100;
+    
+    // Ubah nilai ini untuk mengatur jarak dari tepi
+    const horizontalMargin = 250; 
+    
+    const x = side === 'left' ? horizontalMargin : dimensions.width - horizontalMargin;
     return { x, y };
   };
 
   useEffect(() => {
-    // ... useEffect untuk dimensi tidak berubah ...
     const updateDimensions = () => {
       if (svgRef.current) {
         const rect = svgRef.current.getBoundingClientRect();
@@ -48,16 +64,28 @@ const SkillsNetwork = () => {
 
   return (
     <div className="w-full h-screen bg-black relative">
+      <button
+        onClick={() => setDebugMode(!debugMode)}
+        className="absolute top-4 right-4 z-10 bg-white text-black px-4 py-2 rounded"
+      >
+        Debug: {debugMode ? 'ON' : 'OFF'}
+      </button>
       <svg
         ref={svgRef}
         viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
         className="w-full h-full"
       >
         <defs>
-          <filter id="glow-filter" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
+          {/* Turbulence filter for electric effect */}
+          <filter id="energy-filter" colorInterpolationFilters="sRGB">
+            <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="10" result="noise1" seed="1" />
+            <feDisplacementMap in="SourceGraphic" in2="noise1" scale="30" />
+          </filter>
+          {/* Glow filter for logo */}
+          <filter id="glow-filter">
+            <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
             <feMerge>
-              <feMergeNode in="blur"/>
+              <feMergeNode in="coloredBlur"/>
               <feMergeNode in="SourceGraphic"/>
             </feMerge>
           </filter>
@@ -72,8 +100,10 @@ const SkillsNetwork = () => {
               startPos={start}
               endPos={centerPos}
               side="left"
-              index={i}
-              // ❌ Prop logoDimensions dan totalLinks dihapus
+              curvature={0.4}
+              iconRef={leftIconRefs.current[i]}
+              coreCenter={centerPos}
+              debugMode={debugMode}
             />
           );
         })}
@@ -85,18 +115,19 @@ const SkillsNetwork = () => {
               startPos={start}
               endPos={centerPos}
               side="right"
-              index={i}
-              // ❌ Prop logoDimensions dan totalLinks dihapus
+              curvature={0.4}
+              iconRef={rightIconRefs.current[i]}
+              coreCenter={centerPos}
+              debugMode={debugMode}
             />
           );
         })}
 
-        {/* ... sisa komponen TechIcon dan CoreLogo tidak berubah ... */}
-        
         {/* Tech Icons */}
         {leftIcons.map((icon, i) => (
           <TechIcon
-            key={`left-icon-${i}`}
+            key={`left-${i}`}
+            ref={leftIconRefs.current[i]}
             src={icon.src}
             position={getIconPosition('left', i)}
             side="left"
@@ -104,7 +135,8 @@ const SkillsNetwork = () => {
         ))}
         {rightIcons.map((icon, i) => (
           <TechIcon
-            key={`right-icon-${i}`}
+            key={`right-${i}`}
+            ref={rightIconRefs.current[i]}
             src={icon.src}
             position={getIconPosition('right', i)}
             side="right"
