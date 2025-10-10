@@ -39,9 +39,11 @@ export default function EnergyLink({
         : "#3B82F6"
       : iconColor
 
-  const { d, debugPoints } = useMemo(() => {
+  const { d, debugPoints, actualStartPos } = useMemo(() => {
     const dir = side === "left" ? 1 : -1
-    const dx = Math.abs(coreCenter.x - startPos.x)
+    const iconRadius = 25
+    const actualStartPos = { x: startPos.x + dir * iconRadius, y: startPos.y }
+    const dx = Math.abs(coreCenter.x - actualStartPos.x)
 
     // --- Parameter Kustomisasi ---
     const straightLenRatio = 0.4 
@@ -54,10 +56,10 @@ export default function EnergyLink({
     const ampModulationCycles = 1.5 
     const ampModulationIntensity = 0.4
 
-    const p1 = { x: startPos.x + dir * (dx * straightLenRatio), y: startPos.y }
+    const p1 = { x: actualStartPos.x + dir * (dx * straightLenRatio), y: actualStartPos.y }
     const p2 = {
-        x: startPos.x + dir * (dx * converge1Ratio),
-        y: lerp(startPos.y, coreCenter.y, 0.5) 
+        x: actualStartPos.x + dir * (dx * converge1Ratio),
+        y: lerp(actualStartPos.y, coreCenter.y, 0.5)
     }
     const pBraidStart = { x: coreCenter.x - dir * braidInset, y: coreCenter.y }
 
@@ -88,7 +90,7 @@ export default function EnergyLink({
     }
     
     const allPts: [number, number][] = [
-      [startPos.x, startPos.y],
+      [actualStartPos.x, actualStartPos.y],
       [p1.x, p1.y],
       [p2.x, p2.y],
       [pBraidStart.x, pBraidStart.y],
@@ -105,7 +107,7 @@ export default function EnergyLink({
 
     const debugPoints = { p1, p2, pBraidStart, end: coreCenter }
 
-    return { d: dStr, debugPoints }
+    return { d: dStr, debugPoints, actualStartPos }
   }, [startPos, coreCenter, side, index, curvature])
 
   // GSAP draw animation
@@ -126,7 +128,7 @@ export default function EnergyLink({
         {/* PERUBAHAN 1: Gradien dibuat lebih cerah di tengah */}
         <linearGradient
           id={gradId}
-          x1={startPos.x} y1={startPos.y}
+          x1={actualStartPos.x} y1={actualStartPos.y}
           x2={coreCenter.x} y2={coreCenter.y}
           gradientUnits="userSpaceOnUse"
         >
@@ -172,7 +174,7 @@ export default function EnergyLink({
 
       {debugMode && (
         <>
-          <circle cx={startPos.x} cy={startPos.y} r={3} fill="yellow" />
+          <circle cx={actualStartPos.x} cy={actualStartPos.y} r={3} fill="yellow" />
           <circle cx={debugPoints.p1.x} cy={debugPoints.p1.y} r={3} fill="orange" />
           <circle cx={debugPoints.p2.x} cy={debugPoints.p2.y} r={4} fill="limegreen" />
           <circle cx={debugPoints.pBraidStart.x} cy={debugPoints.pBraidStart.y} r={3} fill="deepskyblue" />

@@ -13,8 +13,8 @@ export default function HomePage() {
   return (
     <main className="relative overflow-visible">
       <IntroSection />
-      <SkillsNetwork />
       <AboutSection profile={profileData} />
+      <SkillsNetwork />
     </main>
   );
 }

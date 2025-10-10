@@ -2,29 +2,15 @@
 
 import React, { useEffect, useRef, useState } from "react"
 import CoreLogo from "./CoreLogo"
-import TechIcon from "./TechIcon"
 import EnergyLink from "./EnergyLink"
+import { SiReact, SiCplusplus, SiPython, SiJavascript, SiNodedotjs, SiTypescript, SiNextdotjs, SiLaravel } from 'react-icons/si'
 
 const SkillsNetwork = () => {
   const svgRef = useRef<SVGSVGElement>(null)
   const [dimensions, setDimensions] = useState({ width: 1000, height: 480 })
-  const [debugMode, setDebugMode] = useState(false) // Toggle for debug markers
-
-  // Refs for icons (kept for future interactions)
-  const leftIconRefs = useRef<React.RefObject<SVGImageElement | null>[]>([])
-  const rightIconRefs = useRef<React.RefObject<SVGImageElement | null>[]>([])
-  if (leftIconRefs.current.length === 0) {
-    leftIconRefs.current = Array(4)
-      .fill(null)
-      .map(() => React.createRef<SVGImageElement | null>())
-    rightIconRefs.current = Array(4)
-      .fill(null)
-      .map(() => React.createRef<SVGImageElement | null>())
-  }
-
+  const [debugMode, setDebugMode] = useState(false)
 
   
-
   const colorPalette = [
     '#e81cff', // Magenta
     '#40c9ff', // Cyan
@@ -32,23 +18,33 @@ const SkillsNetwork = () => {
     '#40c9ff', // Cyan (diulang untuk variasi)
   ];
 
-  // Use placeholders to guarantee previewed icons
   const leftIcons = [
-    { name: "React", src: "/react-logo.png", color: "#61DAFB" },
-    { name: "C++", src: "/c---logo.jpg", color: "#00599C" },
-    { name: "Python", src: "/python-logo.png", color: "#3776AB" },
-    { name: "JavaScript", src: "/javascript-logo.png", color: "#F7DF1E" },
+    { name: "React", component: SiReact },
+    { name: "C++", component: SiCplusplus },
+    { name: "Python", component: SiPython },
+    { name: "JavaScript", component: SiJavascript },
   ]
   const rightIcons = [
-    { name: "Node.js", src: "/nodejs-logo.png", color: "#3C873A" },
-    { name: "TypeScript", src: "/typescript-logo.png", color: "#3178C6" },
-    { name: "Next.js", src: "/nextjs-logo.png", color: "#FFFFFF" },
-    { name: "Laravel", src: "/laravel-logo.jpg", color: "#FF2D20" },
+    { name: "Node.js", component: SiNodedotjs },
+    { name: "TypeScript", component: SiTypescript },
+    { name: "Next.js", component: SiNextdotjs },
+    { name: "Laravel", component: SiLaravel },
   ]
 
+  // --- PERUBAHAN DI SINI ---
 
-  
-  const centerPos = { x: dimensions.width / 2, y: dimensions.height / 2 }
+  // 1. Definisikan titik tengah untuk tujuan GARIS
+  const lineCenterPos = { 
+    x: dimensions.width / 2, 
+    y: dimensions.height / 2 
+  };
+
+  // 2. Definisikan posisi untuk LOGO dengan offset vertikal
+  const verticalOffset = 30; // Geser logo ke atas sejauh 30px
+  const logoCenterPos = {
+    x: dimensions.width / 2,
+    y: (dimensions.height / 2) - verticalOffset,
+  };
 
   const getIconPosition = (side: "left" | "right", index: number) => {
     const rows = 4
@@ -81,76 +77,64 @@ const SkillsNetwork = () => {
         </button>
       </div>
 
-      {debugMode && (
-        <div className="absolute top-4 left-4 z-10">
-          <figure className="opacity-75">
-            <img
-              src="/images/reference-screenshot.png"
-              alt="Reference screenshot"
-              className="w-[320px] h-auto rounded"
-            />
-            <figcaption className="text-xs mt-1 text-neutral-300">Referensi tata letak target</figcaption>
-          </figure>
-        </div>
-      )}
-
       <svg ref={svgRef} viewBox={`0 0 ${dimensions.width} ${dimensions.height}`} className="w-full h-full">
         {/* Links from left */}
-        {leftIcons.map((icon, i) => {
+        {leftIcons.map((_, i) => {
           const start = getIconPosition("left", i)
           return (
             <EnergyLink
               key={`left-link-${i}`}
               startPos={start}
-              coreCenter={centerPos}
+              // 3. Gunakan `lineCenterPos` untuk garis
+              coreCenter={lineCenterPos}
               side="left"
               index={i}
               curvature={0.7}
-              iconColor={colorPalette[i % colorPalette.length]} 
+              iconColor={colorPalette[i % colorPalette.length]}
               debugMode={debugMode}
             />
           )
         })}
 
         {/* Links from right */}
-        {rightIcons.map((icon, i) => {
+        {rightIcons.map((_, i) => {
           const start = getIconPosition("right", i)
           return (
             <EnergyLink
               key={`right-link-${i}`}
               startPos={start}
-              coreCenter={centerPos}
+              // 4. Gunakan `lineCenterPos` untuk garis
+              coreCenter={lineCenterPos}
               side="right"
               index={i}
               curvature={0.7}
-              iconColor={colorPalette[i % colorPalette.length]} 
+              iconColor={colorPalette[i % colorPalette.length]}
               debugMode={debugMode}
             />
           )
         })}
 
         {/* Tech Icons */}
-        {leftIcons.map((icon, i) => (
-          <TechIcon
-            key={`left-icon-${i}`}
-            ref={leftIconRefs.current[i]}
-            src={icon.src}
-            position={getIconPosition("left", i)}
-            side="left"
-          />
-        ))}
-        {rightIcons.map((icon, i) => (
-          <TechIcon
-            key={`right-icon-${i}`}
-            ref={rightIconRefs.current[i]}
-            src={icon.src}
-            position={getIconPosition("right", i)}
-            side="right"
-          />
-        ))}
+        {leftIcons.map((icon, i) => {
+          const pos = getIconPosition("left", i)
+          return (
+            <g key={`left-icon-${i}`} transform={`translate(${pos.x - 25}, ${pos.y - 25})`}>
+              <icon.component size={50} color="white" />
+            </g>
+          )
+        })}
+        {rightIcons.map((icon, i) => {
+          const pos = getIconPosition("right", i)
+          return (
+            <g key={`right-icon-${i}`} transform={`translate(${pos.x - 25}, ${pos.y - 25})`}>
+              <icon.component size={50} color="white" />
+            </g>
+          )
+        })}
 
         {/* Core Logo */}
-        <CoreLogo position={centerPos} />
+        {/* 5. Gunakan `logoCenterPos` untuk logo */}
+        <CoreLogo position={logoCenterPos} />
       </svg>
     </div>
   )
