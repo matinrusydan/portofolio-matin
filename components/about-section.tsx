@@ -69,4 +69,3 @@ export function AboutSection({ profile = {} }: { profile?: Profile }) {
     </section>
   );
 }
-

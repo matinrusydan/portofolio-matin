@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -42,8 +42,8 @@
 }
 
 .dark {
-  --background: oklch(0.15 0 0); 
-  --foreground: oklch(0.985 0 0); 
+  --background: oklch(0.15 0 0);
+  --foreground: oklch(0.985 0 0);
   --primary: oklch(0.985 0 0);
   --primary-foreground: oklch(0.17 0 0);
   --muted-foreground: oklch(0.75 0 0);
@@ -110,13 +110,11 @@
 }
 
 .font-poppins {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
-.font-manrope{
-  font-family: 'Manrope', sans-serif;
+.font-manrope {
+  font-family: "Manrope", sans-serif;
 }
-
-
 
 /* Buttons: ensure enough contrast on dark bg */
 button {
@@ -124,12 +122,15 @@ button {
 }
 
 /* Text shadow for CardNav readability over LightRays */
-.logo, .card-nav-link, .card-nav-label {
-  text-shadow: 0 0 10px rgba(0,0,0,0.6);
+.logo,
+.card-nav-link,
+.card-nav-label {
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
 }
 
 /* Improved line height for Hero text */
-h1, p {
+h1,
+p {
   line-height: 1.2;
 }
 
@@ -141,20 +142,16 @@ h1, p {
   -webkit-text-fill-color: transparent;
   letter-spacing: 0.04em;
   font-weight: 800;
-  text-shadow:
-    0 1px 2px rgba(255, 255, 255, 0.5),
-    0 2px 6px rgba(0, 0, 0, 0.3),
-    0 0 12px rgba(255, 255, 255, 0.2);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3), 0 0 12px rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
 }
 
 .modern-hero-text:hover {
-  text-shadow:
-    0 1px 3px rgba(255, 255, 255, 0.6),
-    0 2px 8px rgba(255, 255, 255, 0.4),
-    0 0 16px rgba(255, 255, 255, 0.25);
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.6), 0 2px 8px rgba(255, 255, 255, 0.4), 0 0 16px
+    rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
 }
+
 /* Typography helpers per brief */
 h1,
 h2,
@@ -165,7 +162,7 @@ h3 {
 
 .technology-text,
 .enthusiast-text {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 600;
   font-size: 128px;
   letter-spacing: -0.02em;
@@ -176,12 +173,7 @@ h3 {
 }
 
 .technology-text {
-  background: linear-gradient(
-    to bottom,
-    #212121 0%,
-    #666666 67%,
-    #666666 100%
-  );
+  background: linear-gradient(to bottom, #212121 0%, #666666 67%, #666666 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -193,22 +185,20 @@ h3 {
   will-change: transform;
   backface-visibility: hidden;
   isolation: isolate;
-
-  /* --- jarak & irisan --- */
-  transform: translateY(22px);  /* geser sedikit ke atas */
-  margin-bottom: -42px;        /* bikin lebih rapet */
 }
 
 .enthusiast-text {
-  position: relative;
+  position: static;
   z-index: 2;
-  top: 50%;
-  transform: translate(-50%, -40%);
+  top: auto;
+  left: auto;
+  transform: none;
+  margin: 0;
 }
 
-
 @media (max-width: 768px) {
-  .technology-text, .enthusiast-text {
+  .technology-text,
+  .enthusiast-text {
     font-size: 52px;
     line-height: 40px;
   }
