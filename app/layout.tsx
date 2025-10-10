@@ -4,9 +4,11 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
+import dynamic from "next/dynamic"
 import "./globals.css"
-import LightRays from "@/components/LightRays"
-import CardNav from "@/components/CardNav"
+import CardNav from "../components/CardNav"
+
+const LightRaysClient = dynamic(() => import("../components/LightRays.jsx"), { ssr: false })
 
 export const metadata: Metadata = {
   title: "Matin Rusydan",
@@ -19,39 +21,32 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  // Definisikan item menu sesuai dengan struktur CardNav
   const navItems = [
     {
       label: "Home",
-      bgColor: "#170D27", // Warna gelap untuk kontras
+      bgColor: "#170D27",
       textColor: "#FFFFFF",
-      links: [
-        { label: "Go to Home", href: "#home", ariaLabel: "Navigate to Home section" },
-      ]
+      links: [{ label: "Go to Home", href: "#home", ariaLabel: "Navigate to Home section" }],
     },
     {
       label: "About",
       bgColor: "#271E37",
       textColor: "#FFFFFF",
-      links: [
-        { label: "About Me", href: "#about", ariaLabel: "Navigate to About section" },
-      ]
+      links: [{ label: "About Me", href: "#about", ariaLabel: "Navigate to About section" }],
     },
     {
       label: "Contact",
       bgColor: "#0D0716",
       textColor: "#FFFFFF",
-      links: [
-        { label: "Contact Me", href: "#contact", ariaLabel: "Navigate to Contact section" },
-      ]
-    }
-  ];
+      links: [{ label: "Contact Me", href: "#contact", ariaLabel: "Navigate to Contact section" }],
+    },
+  ]
 
   return (
     <html lang="en" className="dark">
       <body className={`relative bg-black overflow-visible font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
         <div className="fixed inset-0 -z-10 pointer-events-none translate-y-0 sm:translate-y-8 md:translate-y-0">
-          <LightRays />
+          <LightRaysClient />
         </div>
         <div className="fixed top-0 left-0 w-full z-[100] flex justify-center">
           <CardNav
