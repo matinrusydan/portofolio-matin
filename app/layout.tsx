@@ -4,11 +4,9 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
-import dynamic from "next/dynamic"
 import "./globals.css"
 import CardNav from "../components/CardNav"
-
-const LightRaysClient = dynamic(() => import("../components/LightRays.jsx"), { ssr: false })
+import { Background } from "../components/Background"
 
 export const metadata: Metadata = {
   title: "Matin Rusydan",
@@ -45,9 +43,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`relative bg-black overflow-visible font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <div className="fixed inset-0 -z-10 pointer-events-none translate-y-0 sm:translate-y-8 md:translate-y-0">
-          <LightRaysClient />
-        </div>
+        <Background />
         <div className="fixed top-0 left-0 w-full z-[100] flex justify-center">
           <CardNav
             logo="/logo-matbrew.png"

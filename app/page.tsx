@@ -1,5 +1,6 @@
 import { IntroSection } from "@/components/IntroSection";
 import { AboutSection } from "@/components/about-section";
+import SkillsNetwork from "@/components/SkillsNetwork";
 
 const profileData = {
   name: 'Matin Rusydan',
@@ -12,6 +13,7 @@ export default function HomePage() {
   return (
     <main className="relative overflow-visible">
       <IntroSection />
+      <SkillsNetwork />
       <AboutSection profile={profileData} />
     </main>
   );
