@@ -17,6 +17,7 @@ export interface EnergyLinkProps {
   curvature?: number
   iconColor: string
   debugMode?: boolean
+  drawProgress?: number
 }
 
 export default function EnergyLink({
@@ -27,6 +28,7 @@ export default function EnergyLink({
   curvature = 0.65,
   iconColor,
   debugMode = false,
+  drawProgress = 1,
 }: EnergyLinkProps) {
   const pathRef = useRef<SVGPathElement>(null)
   const gradId = useId().replaceAll(":", "_") + "-grad"
@@ -110,17 +112,17 @@ export default function EnergyLink({
     return { d: dStr, debugPoints, actualStartPos }
   }, [startPos, coreCenter, side, index, curvature])
 
-  // GSAP draw animation
+  // GSAP draw animation controlled by drawProgress
   useEffect(() => {
     if (!pathRef.current) return
     const len = pathRef.current.getTotalLength()
-    gsap.set(pathRef.current, { strokeDasharray: len, strokeDashoffset: len })
+    gsap.set(pathRef.current, { strokeDasharray: len })
     gsap.to(pathRef.current, {
-      strokeDashoffset: 0,
-      duration: 5.5,
-      ease: "power1.inOut",
+      strokeDashoffset: len * (1 - drawProgress),
+      duration: 0.5,
+      ease: "power2.out",
     })
-  }, [d])
+  }, [d, drawProgress])
 
   return (
     <g>
