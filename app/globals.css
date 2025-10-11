@@ -209,3 +209,14 @@ h3 {
     transform: translateY(18px);
   }
 }
+
+.hero-fade-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20%; /* Tinggi gradien, bisa diatur antara 10-20% */
+  background: linear-gradient(to top, black, transparent);
+  pointer-events: none; /* Penting agar tidak menghalangi interaksi mouse */
+}

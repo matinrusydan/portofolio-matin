@@ -23,7 +23,7 @@ export function IntroSection() {
   }, [])
 
   return (
-    <section ref={sectionRef} id="intro" className="relative w-full overflow-visible bg-transparent">
+    <section ref={sectionRef} id="intro" className="relative w-full overflow-visible bg-transparent hero-fade-container">
       {/* Light rays mengikuti tinggi hero */}
       {height && (
         <div className="absolute top-0 left-0 w-full z-[-1]" style={{ height: `${height}px` }}>

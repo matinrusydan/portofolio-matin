@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import CoreLogo from "./CoreLogo"
 import EnergyLink from "./EnergyLink"
-import { SiReact, SiCplusplus, SiPython, SiJavascript, SiNodedotjs, SiTypescript, SiNextdotjs, SiLaravel } from 'react-icons/si'
+import { SiReact, SiFigma, SiPython, SiJavascript, SiNodedotjs, SiTypescript, SiNextdotjs, SiLaravel } from 'react-icons/si'
 
 const SkillsNetwork = () => {
   const svgRef = useRef<SVGSVGElement>(null)
@@ -20,7 +20,7 @@ const SkillsNetwork = () => {
 
   const leftIcons = [
     { name: "React", component: SiReact },
-    { name: "C++", component: SiCplusplus },
+    { name: "Figma", component: SiFigma },
     { name: "Python", component: SiPython },
     { name: "JavaScript", component: SiJavascript },
   ]
