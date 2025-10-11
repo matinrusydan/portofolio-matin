@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useId, useMemo, useRef } from "react"
+import React, { useEffect, useId, useMemo, useRef } from "react"
 import { gsap } from "gsap"
 import * as d3 from "d3"
 
@@ -20,7 +20,7 @@ export interface EnergyLinkProps {
   drawProgress?: number
 }
 
-export default function EnergyLink({
+export default React.memo(function EnergyLink({
   startPos,
   coreCenter,
   side,
@@ -31,6 +31,7 @@ export default function EnergyLink({
   drawProgress = 1,
 }: EnergyLinkProps) {
   const pathRef = useRef<SVGPathElement>(null)
+  const pathLengthRef = useRef<number>(0)
   const gradId = useId().replaceAll(":", "_") + "-grad"
   const glowId = useId().replaceAll(":", "_") + "-glow"
 
@@ -112,17 +113,34 @@ export default function EnergyLink({
     return { d: dStr, debugPoints, actualStartPos }
   }, [startPos, coreCenter, side, index, curvature])
 
-  // GSAP draw animation controlled by drawProgress
+  // Optimized GSAP animation with instant updates
   useEffect(() => {
     if (!pathRef.current) return
-    const len = pathRef.current.getTotalLength()
-    gsap.set(pathRef.current, { strokeDasharray: len })
-    gsap.to(pathRef.current, {
-      strokeDashoffset: len * (1 - drawProgress),
-      duration: 0.5,
-      ease: "power2.out",
-    })
-  }, [d, drawProgress])
+
+    const path = pathRef.current
+    const len = path.getTotalLength()
+    pathLengthRef.current = len
+
+    // Set initial dash array
+    gsap.set(path, { strokeDasharray: len })
+
+    // Create quick setter for instant updates
+    const setDashOffset = gsap.quickSetter(path, "strokeDashoffset", "px")
+
+    // Set initial position
+    setDashOffset(len * (1 - drawProgress))
+
+    // Store setter for updates
+    ;(path as any)._dashSetter = setDashOffset
+  }, [d])
+
+  // Update animation on progress change
+  useEffect(() => {
+    if (!pathRef.current || !(pathRef.current as any)._dashSetter) return
+
+    const setter = (pathRef.current as any)._dashSetter
+    setter(pathLengthRef.current * (1 - drawProgress))
+  }, [drawProgress])
 
   return (
     <g>
@@ -185,4 +203,4 @@ export default function EnergyLink({
       )}
     </g>
   )
-}
+})

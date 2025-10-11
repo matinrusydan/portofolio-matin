@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import CoreLogo from "./CoreLogo"
 import EnergyLink from "./EnergyLink"
 import { SiReact, SiFigma, SiPython, SiJavascript, SiNodedotjs, SiTypescript, SiNextdotjs, SiLaravel } from 'react-icons/si'
@@ -13,25 +13,26 @@ const SkillsNetwork = () => {
   const [drawProgress, setDrawProgress] = useState(0)
 
   
-  const colorPalette = [
+  const colorPalette = useMemo(() => [
     '#e81cff', // Magenta
     '#40c9ff', // Cyan
     '#ff00a2', // Pink Terang
     '#40c9ff', // Cyan (diulang untuk variasi)
-  ];
+  ], []);
 
-  const leftIcons = [
+  const leftIcons = useMemo(() => [
     { name: "React", component: SiReact },
     { name: "Figma", component: SiFigma },
     { name: "Python", component: SiPython },
     { name: "JavaScript", component: SiJavascript },
-  ]
-  const rightIcons = [
+  ], []);
+
+  const rightIcons = useMemo(() => [
     { name: "Node.js", component: SiNodedotjs },
     { name: "TypeScript", component: SiTypescript },
     { name: "Next.js", component: SiNextdotjs },
     { name: "Laravel", component: SiLaravel },
-  ]
+  ], []);
 
   // --- PERUBAHAN DI SINI ---
 
@@ -43,12 +44,12 @@ const SkillsNetwork = () => {
 
   // 2. Definisikan posisi untuk LOGO dengan offset vertikal
   const verticalOffset = 30; // Geser logo ke atas sejauh 30px
-  const logoCenterPos = {
+  const logoCenterPos = useMemo(() => ({
     x: dimensions.width / 2,
     y: (dimensions.height / 2) - verticalOffset,
-  };
+  }), [dimensions.width, dimensions.height]);
 
-  const getIconPosition = (side: "left" | "right", index: number) => {
+  const getIconPosition = useCallback((side: "left" | "right", index: number) => {
     const rows = 4
     const topPadding = 250
     const bottomPadding = 250
@@ -58,7 +59,7 @@ const SkillsNetwork = () => {
     const horizontalMargin = 220
     const x = side === "left" ? horizontalMargin : dimensions.width - horizontalMargin
     return { x, y }
-  }
+  }, [dimensions.width, dimensions.height])
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -72,50 +73,49 @@ const SkillsNetwork = () => {
   }, [])
 
   useEffect(() => {
-    const calculateDrawProgress = () => {
-      if (!containerRef.current) return
+    if (!containerRef.current) return
 
-      const rect = containerRef.current.getBoundingClientRect()
+    // Smooth easing function for progress
+    const easeInOutQuad = (t: number): number => {
+      return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2
+    }
+
+    // Calculate progress based on how centered the element is in viewport
+    const calculateProgress = (entries: IntersectionObserverEntry[]) => {
+      const entry = entries[0]
+      if (!entry) return
+
+      const rect = entry.boundingClientRect
       const windowHeight = window.innerHeight
+      const elementCenter = rect.top + rect.height / 2
+      const viewportCenter = windowHeight / 2
 
-      // Calculate progress based on element position
-      const elementTop = rect.top
-      const elementBottom = rect.bottom
-      const elementHeight = rect.height
+      // Distance from element center to viewport center
+      const distanceFromCenter = Math.abs(elementCenter - viewportCenter)
 
-      // Progress starts when top of element reaches top of viewport
-      // Peaks when center of element is at center of viewport
-      // Ends when bottom of element reaches bottom of viewport
+      // Maximum distance where we still want some effect
+      const maxDistance = windowHeight / 2 + rect.height / 2
 
-      let progress = 0
+      // Progress is highest when element is centered, lowest when far from center
+      const rawProgress = 1 - (distanceFromCenter / maxDistance)
 
-      if (elementTop <= 0 && elementBottom >= windowHeight) {
-        // Element is fully in view, center it
-        progress = 1
-      } else if (elementTop > 0) {
-        // Element entering from top
-        const enterProgress = 1 - (elementTop / windowHeight)
-        progress = Math.max(0, Math.min(1, enterProgress))
-      } else if (elementBottom < windowHeight) {
-        // Element exiting to bottom
-        const exitProgress = elementBottom / windowHeight
-        progress = Math.max(0, Math.min(1, exitProgress))
-      }
+      // Clamp and ease
+      const clampedProgress = Math.max(0, Math.min(1, rawProgress))
+      const easedProgress = easeInOutQuad(clampedProgress)
 
-      setDrawProgress(progress)
+      setDrawProgress(easedProgress)
     }
 
-    const handleScroll = () => {
-      requestAnimationFrame(calculateDrawProgress)
-    }
+    // Create IntersectionObserver with multiple thresholds for smooth transitions
+    const observer = new IntersectionObserver(calculateProgress, {
+      threshold: Array.from({ length: 101 }, (_, i) => i / 100), // 0.00, 0.01, ..., 1.00
+      rootMargin: '0px 0px -10% 0px' // Trigger slightly before/after viewport
+    })
 
-    calculateDrawProgress()
-    window.addEventListener("scroll", handleScroll)
-    window.addEventListener("resize", handleScroll)
+    observer.observe(containerRef.current)
 
     return () => {
-      window.removeEventListener("scroll", handleScroll)
-      window.removeEventListener("resize", handleScroll)
+      observer.disconnect()
     }
   }, [])
 
