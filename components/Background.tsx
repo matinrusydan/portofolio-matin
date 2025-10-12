@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic"
 
-const LightRaysClient = dynamic(() => import("./LightRays.jsx"), { ssr: false })
+const LightRaysClient = dynamic(() => import("./LightRays"), { ssr: false })
 
 export function Background() {
   return (

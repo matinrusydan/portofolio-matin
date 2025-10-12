@@ -185,17 +185,19 @@ const SkillsNetwork = () => {
         {/* Tech Icons */}
         {leftIcons.map((icon, i) => {
           const pos = getIconPosition("left", i)
+          const IconComp = icon.component as React.ComponentType<{ size: number; color: string }>;
           return (
             <g key={`left-icon-${i}`} transform={`translate(${pos.x - 25}, ${pos.y - 25})`}>
-              <icon.component size={50} color="white" />
+              <IconComp size={50} color="white" />
             </g>
           )
         })}
         {rightIcons.map((icon, i) => {
           const pos = getIconPosition("right", i)
+          const IconComp = icon.component as React.ComponentType<{ size: number; color: string }>;
           return (
             <g key={`right-icon-${i}`} transform={`translate(${pos.x - 25}, ${pos.y - 25})`}>
-              <icon.component size={50} color="white" />
+              <IconComp size={50} color="white" />
             </g>
           )
         })}

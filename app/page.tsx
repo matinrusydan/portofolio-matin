@@ -1,6 +1,7 @@
 import { IntroSection } from "@/components/IntroSection";
 import { AboutSection } from "@/components/about-section";
 import SkillsNetwork from "@/components/SkillsNetwork";
+import ProjectsSection from "@/components/projects/ProjectsSection";
 
 const profileData = {
   name: 'Matin Rusydan',
@@ -15,6 +16,7 @@ export default function HomePage() {
       <IntroSection />
       <AboutSection profile={profileData} />
       <SkillsNetwork />
+      <ProjectsSection />
     </main>
   );
 }
