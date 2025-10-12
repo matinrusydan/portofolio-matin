@@ -113,7 +113,7 @@ export default React.memo(function EnergyLink({
     return { d: dStr, debugPoints, actualStartPos }
   }, [startPos, coreCenter, side, index, curvature])
 
-  // Optimized GSAP animation with instant updates
+  // Smooth GSAP animation with proper easing
   useEffect(() => {
     if (!pathRef.current) return
 
@@ -122,25 +122,19 @@ export default React.memo(function EnergyLink({
     pathLengthRef.current = len
 
     // Set initial dash array
-    gsap.set(path, { strokeDasharray: len })
+    gsap.set(path, {
+      strokeDasharray: len,
+      strokeDashoffset: len * (1 - drawProgress)
+    })
 
-    // Create quick setter for instant updates
-    const setDashOffset = gsap.quickSetter(path, "strokeDashoffset", "px")
-
-    // Set initial position
-    setDashOffset(len * (1 - drawProgress))
-
-    // Store setter for updates
-    ;(path as any)._dashSetter = setDashOffset
-  }, [d])
-
-  // Update animation on progress change
-  useEffect(() => {
-    if (!pathRef.current || !(pathRef.current as any)._dashSetter) return
-
-    const setter = (pathRef.current as any)._dashSetter
-    setter(pathLengthRef.current * (1 - drawProgress))
-  }, [drawProgress])
+    // Animate to new position with optimized transition
+    gsap.to(path, {
+      strokeDashoffset: len * (1 - drawProgress),
+      duration: 0.2, // Faster response for scroll
+      ease: "power1.out", // Simpler easing for better performance
+      overwrite: true // More aggressive overwrite
+    })
+  }, [d, drawProgress])
 
   return (
     <g>

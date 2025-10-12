@@ -80,42 +80,58 @@ const SkillsNetwork = () => {
       return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2
     }
 
+    let ticking = false
+    let lastProgress = 0
+
     // Calculate progress based on how centered the element is in viewport
-    const calculateProgress = (entries: IntersectionObserverEntry[]) => {
-      const entry = entries[0]
-      if (!entry) return
+    const calculateProgress = () => {
+      if (!containerRef.current || ticking) return
 
-      const rect = entry.boundingClientRect
-      const windowHeight = window.innerHeight
-      const elementCenter = rect.top + rect.height / 2
-      const viewportCenter = windowHeight / 2
+      ticking = true
 
-      // Distance from element center to viewport center
-      const distanceFromCenter = Math.abs(elementCenter - viewportCenter)
+      requestAnimationFrame(() => {
+        const rect = containerRef.current!.getBoundingClientRect()
+        const windowHeight = window.innerHeight
+        const elementCenter = rect.top + rect.height / 2
+        const viewportCenter = windowHeight / 2
 
-      // Maximum distance where we still want some effect
-      const maxDistance = windowHeight / 2 + rect.height / 2
+        // Distance from element center to viewport center
+        const distanceFromCenter = Math.abs(elementCenter - viewportCenter)
 
-      // Progress is highest when element is centered, lowest when far from center
-      const rawProgress = 1 - (distanceFromCenter / maxDistance)
+        // Maximum distance where we still want some effect
+        const maxDistance = windowHeight / 2 + rect.height / 2
 
-      // Clamp and ease
-      const clampedProgress = Math.max(0, Math.min(1, rawProgress))
-      const easedProgress = easeInOutQuad(clampedProgress)
+        // Progress is highest when element is centered, lowest when far from center
+        const rawProgress = 1 - (distanceFromCenter / maxDistance)
 
-      setDrawProgress(easedProgress)
+        // Clamp and ease
+        const clampedProgress = Math.max(0, Math.min(1, rawProgress))
+        const easedProgress = easeInOutQuad(clampedProgress)
+
+        // Only update if progress changed significantly to reduce updates
+        if (Math.abs(easedProgress - lastProgress) > 0.05) {
+          setDrawProgress(easedProgress)
+          lastProgress = easedProgress
+        }
+
+        ticking = false
+      })
     }
 
-    // Create IntersectionObserver with multiple thresholds for smooth transitions
-    const observer = new IntersectionObserver(calculateProgress, {
-      threshold: Array.from({ length: 101 }, (_, i) => i / 100), // 0.00, 0.01, ..., 1.00
-      rootMargin: '0px 0px -10% 0px' // Trigger slightly before/after viewport
-    })
+    // Use passive scroll listener for better performance
+    const handleScroll = () => {
+      calculateProgress()
+    }
 
-    observer.observe(containerRef.current)
+    // Initial calculation
+    calculateProgress()
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('resize', calculateProgress, { passive: true })
 
     return () => {
-      observer.disconnect()
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', calculateProgress)
     }
   }, [])
 

@@ -107,6 +107,15 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Scroll performance optimizations */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  html {
+    scroll-behavior: auto; /* Prevent smooth scrolling interference */
+  }
 }
 
 .font-poppins {
