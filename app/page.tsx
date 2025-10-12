@@ -5,6 +5,7 @@ import { CertificatesShowcase } from "@/components/certificates/certificates-sho
 import { certificates } from "@/components/certificates/certificate-data"
 import { ContactForm } from "@/components/contact/contact-form"
 import { ProjectShowcase } from "@/components/ui/project-showcase"
+import { ProjectShowcaseScroll } from "@/components/ui/project-showcase-scroll";
 
 const profileData = {
   name: 'Matin Rusydan',
@@ -40,7 +41,7 @@ export default function HomePage() {
       <IntroSection />
       <AboutSection profile={profileData} />
       <SkillsNetwork />
-      <ProjectShowcase projects={projects} />
+      <ProjectShowcaseScroll projects={projects} />
       <CertificatesShowcase items={certificates} />
       <ContactForm />
     </main>
