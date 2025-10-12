@@ -33,6 +33,18 @@ export default function RootLayout({
       links: [{ label: "About Me", href: "#about", ariaLabel: "Navigate to About section" }],
     },
     {
+      label: "Projects",
+      bgColor: "#1A1A2E",
+      textColor: "#FFFFFF",
+      links: [{ label: "View Projects", href: "/projects", ariaLabel: "Navigate to Projects page" }],
+    },
+    {
+      label: "Card Demo",
+      bgColor: "#16213E",
+      textColor: "#FFFFFF",
+      links: [{ label: "Card Swap Demo", href: "/card-swap-demo", ariaLabel: "Navigate to Card Swap Demo page" }],
+    },
+    {
       label: "Contact",
       bgColor: "#0D0716",
       textColor: "#FFFFFF",
