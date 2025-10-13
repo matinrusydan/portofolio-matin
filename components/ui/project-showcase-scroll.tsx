@@ -51,12 +51,14 @@ export const ProjectShowcaseScroll: React.FC<ProjectShowcaseScrollProps> = ({
       x: i * distX,
       y: -i * distY,
       z: -i * distX * 1.5,
-      zIndex: total - i
+      zIndex: i + 1
     });
 
     // Set initial positions for all cards - all in final stack positions but invisible
     cards.forEach((card, index) => {
-      const slot = makeSlot(index, cardDistance, verticalDistance, cards.length);
+      // Reverse the position mapping: card with animation index 0 gets the "back" position
+      const visualIndex = (cards.length - 1) - index;
+      const slot = makeSlot(visualIndex, cardDistance, verticalDistance, cards.length);
       gsap.set(card, {
         x: slot.x,
         y: slot.y, // Preserve CardSwap vertical position
@@ -65,7 +67,7 @@ export const ProjectShowcaseScroll: React.FC<ProjectShowcaseScrollProps> = ({
         yPercent: -50,
         skewY: skewAmount,
         transformOrigin: 'center center',
-        zIndex: slot.zIndex,
+        zIndex: index + 1, // Keep zIndex based on animation order (later cards on top)
         force3D: true,
         opacity: 0, // Start invisible for swipe-up effect
         scale: 0.95, // Slightly smaller for entrance
@@ -172,6 +174,8 @@ export const ProjectShowcaseScroll: React.FC<ProjectShowcaseScrollProps> = ({
                       maxWidth: '400px',
                       height: 'auto',
                       minHeight: '300px',
+                      transformStyle: 'preserve-3d',
+                      pointerEvents: 'none',
                     }}
                   >
                     <div className="p-6">
