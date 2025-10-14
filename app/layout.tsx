@@ -7,6 +7,7 @@ import { Suspense } from "react"
 import "./globals.css"
 import CardNav from "../components/CardNav"
 import { Background } from "../components/Background"
+import { Toaster } from 'react-hot-toast'
 
 export const metadata: Metadata = {
   title: "Matin Rusydan",
@@ -70,6 +71,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           {children}
           <Analytics />
+          <Toaster />
         </Suspense>
       </body>
     </html>

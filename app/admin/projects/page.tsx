@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ProjectForm } from '@/components/admin/ProjectForm'
 import { Plus, Edit, Trash2 } from 'lucide-react'
 import Image from 'next/image'
+import toast from 'react-hot-toast'
 
 interface Project {
   id: string
@@ -25,6 +26,7 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     fetchProjects()
@@ -43,22 +45,39 @@ export default function ProjectsPage() {
   }
 
   const handleSubmit = async (formData: FormData) => {
+    console.log('handleSubmit called with formData:', Array.from(formData.entries()));
+
+    setIsSubmitting(true);
+
     try {
       const url = editingProject ? `/api/projects/${editingProject.id}` : '/api/projects'
       const method = editingProject ? 'PUT' : 'POST'
+
+      console.log('Making fetch request:', { url, method, isCreate: !editingProject });
 
       const response = await fetch(url, {
         method,
         body: formData,
       })
 
+      console.log('Response received:', { status: response.status, ok: response.ok, url, method });
+
       if (response.ok) {
+        console.log('Response OK, refreshing projects...');
         await fetchProjects()
         setDialogOpen(false)
         setEditingProject(null)
+        toast.success('Perubahan berhasil disimpan.')
+        console.log('Project saved successfully');
+      } else {
+        const errorText = await response.text();
+        console.error('Response not OK:', { status: response.status, errorText });
+        toast.error('Terjadi kesalahan. Silakan coba lagi.')
       }
     } catch (error) {
       console.error('Failed to save project:', error)
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -77,13 +96,18 @@ export default function ProjectsPage() {
 
       if (response.ok) {
         await fetchProjects()
+        toast.success('Project deleted successfully.')
+      } else {
+        toast.error('Failed to delete project.')
       }
     } catch (error) {
       console.error('Failed to delete project:', error)
+      toast.error('Failed to delete project.')
     }
   }
 
   const handleCreate = () => {
+    console.log('Create button clicked', new Date().toISOString());
     setEditingProject(null)
     setDialogOpen(true)
   }
@@ -99,13 +123,12 @@ export default function ProjectsPage() {
           <h1 className="text-3xl font-bold">Projects</h1>
           <p className="text-muted-foreground">Manage your portfolio projects</p>
         </div>
+        <Button onClick={handleCreate} type="button" disabled={isSubmitting}>
+          <Plus className="h-4 w-4 mr-2" />
+          {isSubmitting ? 'Saving...' : 'Add Project'}
+        </Button>
+
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={handleCreate}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Project
-            </Button>
-          </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
@@ -127,7 +150,7 @@ export default function ProjectsPage() {
             {project.imagePath && (
               <div className="relative w-full h-32 rounded-lg overflow-hidden">
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/projects/${project.imagePath}`}
+                  src={`/uploads/${project.imagePath}`}
                   alt={project.title}
                   fill
                   className="object-cover"

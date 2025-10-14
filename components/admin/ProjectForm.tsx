@@ -23,6 +23,7 @@ export function ProjectForm({ initialData, onSubmit, onCancel }: ProjectFormProp
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [techInput, setTechInput] = useState('')
   const [techStack, setTechStack] = useState<string[]>(initialData?.techStack || [])
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const form = useForm<ProjectFormData>({
     resolver: zodResolver(projectSchema),
@@ -37,24 +38,45 @@ export function ProjectForm({ initialData, onSubmit, onCancel }: ProjectFormProp
   })
 
   const handleFormSubmit = async (data: ProjectFormData) => {
-    const formData = new FormData()
+    console.log('handleFormSubmit called with data:', data);
+    console.log('Tech stack state:', techStack);
 
-    if (initialData?.id) {
-      formData.append('id', initialData.id)
+    // Validate tech stack
+    if (techStack.length === 0) {
+      console.error('Tech stack is empty - validation failed');
+      alert('Please add at least one technology to the tech stack.');
+      return;
     }
 
-    formData.append('title', data.title)
-    formData.append('description', data.description)
-    formData.append('techStack', JSON.stringify(techStack))
-    formData.append('projectLink', data.projectLink || '')
-    formData.append('isFeatured', data.isFeatured.toString())
-    formData.append('orderIndex', data.orderIndex.toString())
+    setIsSubmitting(true);
 
-    if (selectedImage) {
-      formData.append('image', selectedImage)
+    try {
+      const formData = new FormData()
+
+      if (initialData?.id) {
+        formData.append('id', initialData.id)
+      }
+
+      formData.append('title', data.title)
+      formData.append('description', data.description)
+      formData.append('techStack', JSON.stringify(techStack))
+      formData.append('projectLink', data.projectLink || '')
+      formData.append('isFeatured', data.isFeatured.toString())
+      formData.append('orderIndex', data.orderIndex.toString())
+
+      if (selectedImage) {
+        formData.append('image', selectedImage)
+      }
+
+      console.log('FormData prepared, calling onSubmit...');
+      await onSubmit(formData)
+      console.log('onSubmit completed');
+    } catch (error) {
+      console.error('Form submission error:', error);
+      throw error; // Re-throw to let React Hook Form handle it
+    } finally {
+      setIsSubmitting(false);
     }
-
-    await onSubmit(formData)
   }
 
   const addTech = () => {
@@ -180,7 +202,7 @@ export function ProjectForm({ initialData, onSubmit, onCancel }: ProjectFormProp
               <ImageUpload
                 onImageSelect={setSelectedImage}
                 currentImage={initialData?.imagePath ?
-                  `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/projects/${initialData.imagePath}`
+                  `/uploads/${initialData.imagePath}`
                   : undefined
                 }
               />
@@ -194,8 +216,8 @@ export function ProjectForm({ initialData, onSubmit, onCancel }: ProjectFormProp
               Cancel
             </Button>
           )}
-          <Button type="submit">
-            {initialData?.id ? 'Update Project' : 'Create Project'}
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Saving...' : (initialData?.id ? 'Update Project' : 'Create Project')}
           </Button>
         </div>
       </form>

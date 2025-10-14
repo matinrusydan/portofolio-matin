@@ -9,11 +9,12 @@ import { ProjectCard } from '@/components/ui/project-card';
 gsap.registerPlugin(ScrollTrigger);
 
 interface Project {
+  id: string;
   title: string;
   description: string;
-  tech: string[];
-  image?: string;
-  link?: string;
+  techStack: string[];
+  imagePath?: string;
+  projectLink?: string;
 }
 
 interface ProjectShowcaseScrollProps {
@@ -135,9 +136,15 @@ export const ProjectShowcaseScroll: React.FC<ProjectShowcaseScrollProps> = ({
                                         pointerEvents: 'none',
                                     }}
                                 >
-                                    <div className="p-6">
-                                        <ProjectCard {...project} />
-                                    </div>
+                                  <div className="p-6">
+                                    <ProjectCard
+                                      title={project.title}
+                                      description={project.description}
+                                      tech={project.techStack}
+                                      image={project.imagePath}
+                                      link={project.projectLink}
+                                    />
+                                  </div>
                                 </div>
                             ))}
                         </div>

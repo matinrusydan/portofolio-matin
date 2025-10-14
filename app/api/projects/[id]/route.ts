@@ -3,11 +3,12 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const project = await prisma.project.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!project) {
@@ -23,9 +24,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const formData = await request.formData()
 
     const data = {
@@ -43,7 +45,7 @@ export async function PUT(
     if (imageFile) {
       // Delete old image if exists - TODO: Implement file deletion
       const currentProject = await prisma.project.findUnique({
-        where: { id: params.id },
+        where: { id },
         select: { imagePath: true }
       })
 
@@ -58,7 +60,7 @@ export async function PUT(
     }
 
     const project = await prisma.project.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...data,
         ...(imagePath && { imagePath }),
@@ -75,12 +77,13 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     // Delete image from storage - TODO: Implement file deletion
     const project = await prisma.project.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: { imagePath: true }
     })
 
@@ -90,7 +93,7 @@ export async function DELETE(
 
     // Delete from database
     await prisma.project.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ success: true })

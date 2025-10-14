@@ -6,7 +6,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import type { Certificate } from "./certificate-data"
+import type { Certificate } from "@/types/global"
 
 type CertificatesShowcaseProps = {
   items: Certificate[]
@@ -97,7 +97,7 @@ function CardDialog({
           aria-label={`Open certificate ${cert.title}`}
         >
           <div className="aspect-[4/3] w-full overflow-hidden">
-            <img src={cert.image || "/placeholder.svg"} alt={cert.title} className="h-full w-full object-cover" />
+            <img src={cert.imagePath || cert.image || "/placeholder.svg"} alt={cert.title} className="h-full w-full object-cover" />
           </div>
           <div className="flex items-center justify-between p-3 text-left">
             <div>
@@ -123,14 +123,14 @@ function CardDialog({
             {BackgroundComponent ? <BackgroundComponent /> : null}
           </div>
           <img
-            src={cert.image || "/placeholder.svg"}
+            src={cert.imagePath || cert.image || "/placeholder.svg"}
             alt={cert.title}
             className="h-auto w-full rounded-md border border-border"
           />
-          {cert.url ? (
+          {cert.credentialUrl || cert.url ? (
             <div className="mt-4">
               <Button asChild>
-                <a href={cert.url} target="_blank" rel="noopener noreferrer">
+                <a href={cert.credentialUrl || cert.url} target="_blank" rel="noopener noreferrer">
                   Verify
                 </a>
               </Button>

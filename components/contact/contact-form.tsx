@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { toast } from "sonner"
+import toast from "react-hot-toast"
 import { cn } from "@/lib/utils"
 
 const Schema = z.object({
@@ -41,11 +41,27 @@ export function ContactForm({
 
   async function onSubmit(values: Values) {
     setLoading(true)
-    // Simulate async send. Replace with your API/Action as needed.
-    await new Promise((r) => setTimeout(r, 900))
-    setLoading(false)
-    toast.success("Connection Established. I will get back to you soon.")
-    form.reset()
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      })
+
+      if (response.ok) {
+        toast.success("Pesan Anda telah dikirim dan masuk database.")
+        form.reset()
+      } else {
+        toast.error("Terjadi kesalahan. Silakan coba lagi.")
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      toast.error("Terjadi kesalahan. Silakan coba lagi.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

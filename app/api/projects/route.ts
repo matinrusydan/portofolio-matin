@@ -50,31 +50,42 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  console.log('[API] POST /api/projects called', new Date().toISOString());
+
   try {
     const formData = await request.formData()
+    console.log('[API] FormData received:', Array.from(formData.entries()).map(([k, v]) => [k, typeof v === 'string' ? v : `File: ${v.name}`]));
+
+    const rawTechStack = formData.get('techStack') as string;
+    console.log('[API] Raw techStack value:', rawTechStack);
 
     const data = {
       title: formData.get('title') as string,
       description: formData.get('description') as string,
-      techStack: JSON.parse(formData.get('techStack') as string),
+      techStack: JSON.parse(rawTechStack || '[]'),
       projectLink: formData.get('projectLink') as string || undefined,
       isFeatured: formData.get('isFeatured') === 'true',
       orderIndex: parseInt(formData.get('orderIndex') as string) || 0,
     }
 
+    console.log('[API] Parsed data:', data);
+
     // Validate data
     projectSchema.parse(data)
+    console.log('[API] Validation passed');
 
     // Handle image upload - TODO: Implement file storage solution (e.g., local storage, cloud storage)
     let imagePath = null
     const imageFile = formData.get('image') as File
     if (imageFile) {
+      console.log('[API] Image file received:', imageFile.name, imageFile.size);
       // For now, we'll store the filename but implement actual storage later
       const fileName = `project-${Date.now()}.${imageFile.name.split('.').pop()}`
       // TODO: Upload file to storage service
       imagePath = fileName
     }
 
+    console.log('[API] Creating project in database...');
     const project = await prisma.project.create({
       data: {
         ...data,
@@ -82,9 +93,10 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    console.log('[API] Project created successfully:', project.id);
     return NextResponse.json(project)
   } catch (error) {
-    console.error('POST project error:', error)
+    console.error('[API] POST project error:', error)
     return NextResponse.json({ error: 'Failed to create project' }, { status: 500 })
   }
 }
