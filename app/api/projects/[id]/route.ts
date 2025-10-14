@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { saveFile, deleteFile } from '@/lib/file-storage'
 
 export async function GET(
   request: NextRequest,
@@ -39,24 +40,22 @@ export async function PUT(
       orderIndex: parseInt(formData.get('orderIndex') as string) || 0,
     }
 
-    // Handle image upload - TODO: Implement file storage solution (e.g., local storage, cloud storage)
+    // Handle image upload using local storage
     let imagePath = null
     const imageFile = formData.get('image') as File
     if (imageFile) {
-      // Delete old image if exists - TODO: Implement file deletion
+      // Delete old image if exists
       const currentProject = await prisma.project.findUnique({
         where: { id },
         select: { imagePath: true }
       })
 
       if (currentProject?.imagePath) {
-        // TODO: Delete old file from storage
+        await deleteFile(currentProject.imagePath)
       }
 
-      // Upload new image - TODO: Implement file upload
-      const fileName = `project-${Date.now()}.${imageFile.name.split('.').pop()}`
-      // TODO: Upload file to storage service
-      imagePath = fileName
+      // Upload new image
+      imagePath = await saveFile(imageFile, 'project')
     }
 
     const project = await prisma.project.update({
@@ -81,14 +80,14 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    // Delete image from storage - TODO: Implement file deletion
+    // Delete image from storage
     const project = await prisma.project.findUnique({
       where: { id },
       select: { imagePath: true }
     })
 
     if (project?.imagePath) {
-      // TODO: Delete file from storage service
+      await deleteFile(project.imagePath)
     }
 
     // Delete from database

@@ -175,7 +175,7 @@ export function CertificateForm({ initialData, onSubmit, onCancel }: Certificate
               <ImageUpload
                 onImageSelect={setSelectedImage}
                 currentImage={initialData?.imagePath ?
-                  `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/certificates/${initialData.imagePath}`
+                  initialData.imagePath
                   : undefined
                 }
               />

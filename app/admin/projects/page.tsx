@@ -67,15 +67,16 @@ export default function ProjectsPage() {
         await fetchProjects()
         setDialogOpen(false)
         setEditingProject(null)
-        toast.success('Perubahan berhasil disimpan.')
+        toast.success('Project berhasil dibuat!')
         console.log('Project saved successfully');
       } else {
         const errorText = await response.text();
         console.error('Response not OK:', { status: response.status, errorText });
-        toast.error('Terjadi kesalahan. Silakan coba lagi.')
+        toast.error(`Terjadi kesalahan: ${errorText || 'Silakan coba lagi.'}`)
       }
     } catch (error) {
       console.error('Failed to save project:', error)
+      toast.error('Terjadi kesalahan jaringan. Silakan coba lagi.')
     } finally {
       setIsSubmitting(false);
     }
@@ -125,7 +126,7 @@ export default function ProjectsPage() {
         </div>
         <Button onClick={handleCreate} type="button" disabled={isSubmitting}>
           <Plus className="h-4 w-4 mr-2" />
-          {isSubmitting ? 'Saving...' : 'Add Project'}
+          {isSubmitting ? 'Creating...' : 'Add Project'}
         </Button>
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

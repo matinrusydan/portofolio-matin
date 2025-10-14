@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { certificateSchema } from '@/lib/validations'
+import { saveFile, deleteFile } from '@/lib/file-storage'
 
 export async function GET(request: NextRequest) {
   try {
@@ -70,14 +71,11 @@ export async function POST(request: NextRequest) {
     // Validate data
     certificateSchema.parse(data)
 
-    // Handle image upload - TODO: Implement file storage solution (e.g., local storage, cloud storage)
+    // Handle image upload using local storage
     let imagePath = null
     const imageFile = formData.get('image') as File
     if (imageFile) {
-      // For now, we'll store the filename but implement actual storage later
-      const fileName = `certificate-${Date.now()}.${imageFile.name.split('.').pop()}`
-      // TODO: Upload file to storage service
-      imagePath = fileName
+      imagePath = await saveFile(imageFile, 'certificate')
     }
 
     const certificate = await prisma.certificate.create({

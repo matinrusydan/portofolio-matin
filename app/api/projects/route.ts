@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { projectSchema } from '@/lib/validations'
+import { saveFile } from '@/lib/file-storage'
 
 export async function GET(request: NextRequest) {
   try {
@@ -74,15 +75,13 @@ export async function POST(request: NextRequest) {
     projectSchema.parse(data)
     console.log('[API] Validation passed');
 
-    // Handle image upload - TODO: Implement file storage solution (e.g., local storage, cloud storage)
+    // Handle image upload using local storage
     let imagePath = null
     const imageFile = formData.get('image') as File
     if (imageFile) {
       console.log('[API] Image file received:', imageFile.name, imageFile.size);
-      // For now, we'll store the filename but implement actual storage later
-      const fileName = `project-${Date.now()}.${imageFile.name.split('.').pop()}`
-      // TODO: Upload file to storage service
-      imagePath = fileName
+      imagePath = await saveFile(imageFile, 'project')
+      console.log('[API] Image saved at:', imagePath);
     }
 
     console.log('[API] Creating project in database...');
@@ -97,6 +96,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(project)
   } catch (error) {
     console.error('[API] POST project error:', error)
-    return NextResponse.json({ error: 'Failed to create project' }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : 'Failed to create project'
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }

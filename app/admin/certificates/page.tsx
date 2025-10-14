@@ -128,7 +128,7 @@ export default function CertificatesPage() {
             {certificate.imagePath && (
               <div className="relative w-full h-32 rounded-lg overflow-hidden">
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/certificates/${certificate.imagePath}`}
+                  src={certificate.imagePath}
                   alt={certificate.title}
                   fill
                   className="object-cover"

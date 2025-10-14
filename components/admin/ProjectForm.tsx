@@ -24,6 +24,7 @@ export function ProjectForm({ initialData, onSubmit, onCancel }: ProjectFormProp
   const [techInput, setTechInput] = useState('')
   const [techStack, setTechStack] = useState<string[]>(initialData?.techStack || [])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const form = useForm<ProjectFormData>({
     resolver: zodResolver(projectSchema),
@@ -44,11 +45,12 @@ export function ProjectForm({ initialData, onSubmit, onCancel }: ProjectFormProp
     // Validate tech stack
     if (techStack.length === 0) {
       console.error('Tech stack is empty - validation failed');
-      alert('Please add at least one technology to the tech stack.');
+      setSubmitError('Please add at least one technology to the tech stack.');
       return;
     }
 
     setIsSubmitting(true);
+    setSubmitError(null);
 
     try {
       const formData = new FormData()
@@ -68,11 +70,13 @@ export function ProjectForm({ initialData, onSubmit, onCancel }: ProjectFormProp
         formData.append('image', selectedImage)
       }
 
-      console.log('FormData prepared, calling onSubmit...');
+      console.log('FormData prepared:', Array.from(formData.entries()));
+      console.log('Calling onSubmit...');
       await onSubmit(formData)
-      console.log('onSubmit completed');
+      console.log('onSubmit completed successfully');
     } catch (error) {
       console.error('Form submission error:', error);
+      setSubmitError(error instanceof Error ? error.message : 'Terjadi kesalahan saat menyimpan');
       throw error; // Re-throw to let React Hook Form handle it
     } finally {
       setIsSubmitting(false);
@@ -209,6 +213,12 @@ export function ProjectForm({ initialData, onSubmit, onCancel }: ProjectFormProp
             </div>
           </div>
         </div>
+
+        {submitError && (
+          <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md p-3">
+            {submitError}
+          </div>
+        )}
 
         <div className="flex justify-end space-x-2">
           {onCancel && (

@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { saveFile, deleteFile } from '@/lib/file-storage'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const certificate = await prisma.certificate.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!certificate) {
@@ -23,9 +25,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const formData = await request.formData()
 
     const data = {
@@ -38,28 +41,26 @@ export async function PUT(
       orderIndex: parseInt(formData.get('orderIndex') as string) || 0,
     }
 
-    // Handle image upload - TODO: Implement file storage solution (e.g., local storage, cloud storage)
+    // Handle image upload using local storage
     let imagePath = null
     const imageFile = formData.get('image') as File
     if (imageFile) {
-      // Delete old image if exists - TODO: Implement file deletion
+      // Delete old image if exists
       const currentCertificate = await prisma.certificate.findUnique({
-        where: { id: params.id },
+        where: { id },
         select: { imagePath: true }
       })
 
       if (currentCertificate?.imagePath) {
-        // TODO: Delete old file from storage
+        await deleteFile(currentCertificate.imagePath)
       }
 
-      // Upload new image - TODO: Implement file upload
-      const fileName = `certificate-${Date.now()}.${imageFile.name.split('.').pop()}`
-      // TODO: Upload file to storage service
-      imagePath = fileName
+      // Upload new image
+      imagePath = await saveFile(imageFile, 'certificate')
     }
 
     const certificate = await prisma.certificate.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...data,
         issuedAt: data.issuedAt ? new Date(data.issuedAt) : null,
@@ -77,22 +78,23 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Delete image from storage - TODO: Implement file deletion
+    const { id } = await params
+    // Delete image from storage
     const certificate = await prisma.certificate.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: { imagePath: true }
     })
 
     if (certificate?.imagePath) {
-      // TODO: Delete file from storage service
+      await deleteFile(certificate.imagePath)
     }
 
     // Delete from database
     await prisma.certificate.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ success: true })
