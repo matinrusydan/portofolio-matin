@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { supabase } from '@/lib/supabase'
 
 export async function GET(
   request: NextRequest,
@@ -38,29 +37,23 @@ export async function PUT(
       orderIndex: parseInt(formData.get('orderIndex') as string) || 0,
     }
 
-    // Handle image upload
+    // Handle image upload - TODO: Implement file storage solution (e.g., local storage, cloud storage)
     let imagePath = null
     const imageFile = formData.get('image') as File
     if (imageFile) {
-      // Delete old image if exists
+      // Delete old image if exists - TODO: Implement file deletion
       const currentProject = await prisma.project.findUnique({
         where: { id: params.id },
         select: { imagePath: true }
       })
 
       if (currentProject?.imagePath) {
-        await supabase.storage
-          .from('projects')
-          .remove([currentProject.imagePath])
+        // TODO: Delete old file from storage
       }
 
-      // Upload new image
+      // Upload new image - TODO: Implement file upload
       const fileName = `project-${Date.now()}.${imageFile.name.split('.').pop()}`
-      const { error } = await supabase.storage
-        .from('projects')
-        .upload(fileName, imageFile)
-
-      if (error) throw error
+      // TODO: Upload file to storage service
       imagePath = fileName
     }
 
@@ -85,16 +78,14 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Delete image from storage
+    // Delete image from storage - TODO: Implement file deletion
     const project = await prisma.project.findUnique({
       where: { id: params.id },
       select: { imagePath: true }
     })
 
     if (project?.imagePath) {
-      await supabase.storage
-        .from('projects')
-        .remove([project.imagePath])
+      // TODO: Delete file from storage service
     }
 
     // Delete from database

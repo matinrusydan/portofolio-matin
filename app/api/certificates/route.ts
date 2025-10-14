@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { supabase } from '@/lib/supabase'
 import { certificateSchema } from '@/lib/validations'
 
 export async function GET(request: NextRequest) {
@@ -71,16 +70,13 @@ export async function POST(request: NextRequest) {
     // Validate data
     certificateSchema.parse(data)
 
-    // Handle image upload
+    // Handle image upload - TODO: Implement file storage solution (e.g., local storage, cloud storage)
     let imagePath = null
     const imageFile = formData.get('image') as File
     if (imageFile) {
+      // For now, we'll store the filename but implement actual storage later
       const fileName = `certificate-${Date.now()}.${imageFile.name.split('.').pop()}`
-      const { data: uploadData, error } = await supabase.storage
-        .from('certificates')
-        .upload(fileName, imageFile)
-
-      if (error) throw error
+      // TODO: Upload file to storage service
       imagePath = fileName
     }
 

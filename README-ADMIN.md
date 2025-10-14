@@ -7,23 +7,20 @@
 pnpm install
 ```
 
-### 2. Setup Supabase
-1. Create a new Supabase project at [supabase.com](https://supabase.com)
-2. Go to Settings > API to get your credentials
-3. Create storage buckets: `projects` and `certificates`
-4. Run the SQL setup script in Supabase SQL Editor:
-   - Copy contents of `scripts/setup-supabase.sql`
-   - Paste and run in Supabase dashboard
+### 2. Setup Neon Database
+1. Create a new Neon project at [neon.tech](https://neon.tech)
+2. Go to Dashboard > Connection Details to get your connection string
+3. Run the SQL setup script in Neon SQL Editor:
+   - Copy contents of `scripts/setup-neon.sql`
+   - Paste and run in Neon dashboard
 
 ### 3. Environment Variables
-Update `.env.local` with your Supabase credentials:
+Update `.env` with your Neon database connection string:
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-DATABASE_URL=postgresql://postgres:[password]@db.[project-ref].supabase.co:5432/postgres
-DIRECT_URL=postgresql://postgres:[password]@db.[project-ref].supabase.co:5432/postgres
+DATABASE_URL="postgresql://[your-neon-user]:[your-neon-password]@[your-neon-host]/[your-database]?sslmode=require"
 ```
+
+**Note:** Supabase environment variables have been removed as part of the migration to Neon PostgreSQL.
 
 ### 4. Setup Database
 ```bash
@@ -100,12 +97,11 @@ components/
 │   └── CertificateForm.tsx # Certificate CRUD form
 lib/
 ├── prisma.ts             # Prisma client
-├── supabase.ts           # Supabase client
 └── validations.ts        # Zod schemas
 prisma/
 └── schema.prisma         # Database schema
 scripts/
-└── setup-supabase.sql    # Database setup script
+└── setup-neon.sql        # Database setup script
 ```
 
 ## 🔧 API Endpoints
@@ -133,11 +129,10 @@ scripts/
 
 ## 🛡️ Security Features
 
-- **Row Level Security (RLS)** enabled on all tables
 - **Input validation** with Zod schemas
-- **File upload validation** (type, size limits)
 - **SQL injection protection** via Prisma ORM
 - **CORS protection** for API routes
+- **File upload validation** (type, size limits) - temporarily disabled during migration
 
 ## 🎨 UI Components
 
@@ -176,14 +171,13 @@ npx prisma generate
 ```
 
 **Database connection failed:**
-- Check your `DATABASE_URL` in `.env.local`
-- Ensure Supabase project is active
-- Verify database password
+- Check your `DATABASE_URL` in `.env`
+- Ensure Neon project is active
+- Verify database connection string
 
-**Storage upload failed:**
-- Check storage bucket permissions
-- Verify Supabase storage keys
-- Ensure buckets exist: `projects`, `certificates`
+**File upload functionality:**
+- File upload has been temporarily disabled during migration
+- TODO: Implement alternative file storage solution (local storage, cloud storage, etc.)
 
 **Admin panel not loading:**
 - Check browser console for errors
@@ -194,7 +188,7 @@ npx prisma generate
 
 For issues or questions:
 1. Check this README first
-2. Review Supabase documentation
+2. Review Neon documentation
 3. Check Prisma documentation
 4. Open an issue in the repository
 
