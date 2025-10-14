@@ -24,46 +24,43 @@ export function AboutSection({ profile = {} }: { profile?: Profile }) {
   return (
     <section
       id="about"
-      className="flex flex-col items-center justify-center min-h-screen px-6 py-20 md:px-8 bg-black overflow-visible"
+      className="min-h-screen py-20 bg-background overflow-visible"
     >
-      <div 
-        className="
-          container mx-auto flex flex-col-reverse md:flex-row 
-          items-center justify-center gap-10 lg:gap-20
-        "
-      >
-        {/* Kolom Teks (kiri di desktop) */}
-        <div className="flex-1 text-center md:text-left max-w-xl animate-in fade-in slide-in-from-right-12 duration-700">
-          <h1 className="font-manrope text-4xl md:text-5xl font-bold tracking-tight text-white">
-            About Me
-          </h1>
-          <p className="mt-4 text-base md:text-lg text-pretty text-gray-400">
-            {profile?.about || defaultProfile.about}
-          </p>
-          <Button
-            size="lg"
-            className="mt-8 rounded-full px-10 bg-white text-black hover:bg-gray-200"
-            onClick={() => {
-              document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-            }}
-          >
-            Contact Me
-          </Button>
-        </div>
+      <div className="container mx-auto px-20">
+        <div className="flex flex-col-reverse md:flex-row items-center justify-center gap-16">
+          {/* Kolom Teks */}
+          <div className="flex-1 text-center md:text-left max-w-2xl">
+            <h1 className="font-manrope text-4xl md:text-5xl font-bold tracking-tight text-white">
+              About Me
+            </h1>
+            <p className="mt-4 text-base md:text-lg text-pretty text-gray-400">
+              {profile?.about || defaultProfile.about}
+            </p>
+            <Button
+              size="lg"
+              className="mt-8 rounded-full px-10 bg-white text-black hover:bg-gray-200"
+              onClick={() => {
+                document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Contact Me
+            </Button>
+          </div>
 
-        {/* PERBAIKAN: Bungkus ProfileCard dengan div yang memiliki ukuran pasti */}
-        <div className="w-full max-w-[320px] md:max-w-[380px] animate-in fade-in slide-in-from-left-12 duration-700">
-          <ProfileCard
-            name={profile?.name || defaultProfile.name}
-            title={profile?.title || defaultProfile.title}
-            handle="matinrusydan"
-            status="Online"
-            contactText="Contact Me"
-            avatarUrl={profile?.photo || defaultProfile.photo}
-            onContactClick={() => {
-              document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-            }}
-          />
+          {/* Kolom Gambar */}
+          <div className="flex-1 flex justify-center md:justify-end max-w-md">
+            <ProfileCard
+              name={profile?.name || defaultProfile.name}
+              title={profile?.title || defaultProfile.title}
+              handle="matinrusydan"
+              status="Online"
+              contactText="Contact Me"
+              avatarUrl={profile?.photo || defaultProfile.photo}
+              onContactClick={() => {
+                document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            />
+          </div>
         </div>
       </div>
     </section>

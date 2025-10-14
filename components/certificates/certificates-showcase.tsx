@@ -1,6 +1,7 @@
 "use client"
 /* eslint-disable @next/next/no-img-element */
 import * as React from "react"
+import { motion } from "framer-motion"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -15,33 +16,64 @@ type CertificatesShowcaseProps = {
 
 export function CertificatesShowcase({ items, className, BackgroundComponent }: CertificatesShowcaseProps) {
   return (
-    <section className={cn("relative w-full py-10 md:py-16", "bg-background text-foreground", className)}>
-      <header className="px-6 md:px-10 lg:px-16">
-        <h2 className="text-2xl font-semibold md:text-4xl">Certificates</h2>
-        <p className="mt-2 text-muted-foreground">Proof of learning and continuous growth.</p>
-      </header>
+    <section className={cn("relative w-full py-20", "bg-background text-foreground", className)}>
+      <div className="container mx-auto px-20">
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-16">
+          {/* Kolom Teks */}
+          <motion.div
+            className="flex-1 text-center lg:text-left max-w-2xl"
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-2xl font-semibold md:text-4xl bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+              Certificates
+            </h2>
+            <p className="mt-4 text-muted-foreground leading-relaxed">
+              Proof of learning and continuous growth through recognized certifications and achievements.
+            </p>
+          </motion.div>
 
-      <div className="relative mt-8 px-6 md:px-10 lg:px-16">
-        <Carousel
-          opts={{
-            align: "start",
-            loop: true,
-          }}
-          className="w-full"
-        >
-          <CarouselContent className="-ml-2 md:-ml-4">
-            {items.map((cert) => (
-              <CarouselItem key={cert.id} className="basis-[85%] pl-2 md:basis-1/2 md:pl-4 lg:basis-1/3">
-                <TiltCard>
-                  <CardDialog cert={cert} BackgroundComponent={BackgroundComponent} />
-                </TiltCard>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
+          {/* Kolom Carousel */}
+          <motion.div
+            className="flex-1 max-w-4xl"
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-2 md:-ml-4">
+                {items.map((cert, index) => (
+                  <CarouselItem key={cert.id} className="basis-[85%] pl-2 md:basis-1/2 md:pl-4 lg:basis-1/3">
+                    <motion.div
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                      whileHover={{ scale: 1.05 }}
+                      className="h-full"
+                    >
+                      <TiltCard>
+                        <CardDialog cert={cert} BackgroundComponent={BackgroundComponent} />
+                      </TiltCard>
+                    </motion.div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
 
-          <CarouselPrevious className="hidden md:flex" />
-          <CarouselNext className="hidden md:flex" />
-        </Carousel>
+              <CarouselPrevious className="hidden md:flex hover:bg-primary/20 transition-colors" />
+              <CarouselNext className="hidden md:flex hover:bg-primary/20 transition-colors" />
+            </Carousel>
+          </motion.div>
+        </div>
       </div>
     </section>
   )
@@ -117,15 +149,15 @@ function TiltCard({ children }: { children: React.ReactNode }) {
     const el = ref.current
     if (!el) return
     function onMove(e: MouseEvent) {
-      const r = el.getBoundingClientRect()
+      const r = el!.getBoundingClientRect()
       const px = (e.clientX - r.left) / r.width
       const py = (e.clientY - r.top) / r.height
       const rx = (py - 0.5) * -12
       const ry = (px - 0.5) * 12
-      el.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`
+      el!.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`
     }
     function onLeave() {
-      el.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg)"
+      el!.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg)"
     }
     el.addEventListener("mousemove", onMove)
     el.addEventListener("mouseleave", onLeave)

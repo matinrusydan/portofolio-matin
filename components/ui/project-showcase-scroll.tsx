@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ProjectCard } from './project-card';
+import { ProjectCard } from '@/components/ui/project-card';
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -24,103 +24,75 @@ export const ProjectShowcaseScroll: React.FC<ProjectShowcaseScrollProps> = ({
   projects,
 }) => {
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const leftPanelRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const animationStateRef = useRef({
-    currentCardIndex: 0,
     isInitialized: false,
   });
 
-  const totalCards = projects.length;
-
   useEffect(() => {
-    if (!containerRef.current || animationStateRef.current.isInitialized) return;
+    if (!sectionRef.current || animationStateRef.current.isInitialized) return;
 
     const cards = cardRefs.current.filter(Boolean) as HTMLDivElement[];
 
-    // Kill existing ScrollTriggers to prevent duplicates
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 
-    // Configuration constants (matching CardSwap)
     const cardDistance = 60;
     const verticalDistance = 70;
     const skewAmount = 6;
 
-    // Calculate positions like CardSwap idle state
-    const makeSlot = (i: number, distX: number, distY: number, total: number) => ({
-      x: i * distX,
-      y: -i * distY,
-      z: -i * distX * 1.5,
-      zIndex: i + 1
+    // Calculate initial positions for the cards in a stack
+    const makeSlot = (i: number, distX: number, distY: number) => ({
+      x: -i * distX,          // 🔁 ke kiri
+      y: i * distY,           // tetap ke bawah
+      z: -i * distX * 1.5,    // kedalaman tetap
     });
 
-    // Set initial positions for all cards - all in final stack positions but invisible
     cards.forEach((card, index) => {
-      // Reverse the position mapping: card with animation index 0 gets the "back" position
-      const visualIndex = (cards.length - 1) - index;
-      const slot = makeSlot(visualIndex, cardDistance, verticalDistance, cards.length);
+      const slot = makeSlot(index, cardDistance, verticalDistance);
       gsap.set(card, {
         x: slot.x,
-        y: slot.y, // Preserve CardSwap vertical position
+        y: slot.y,
         z: slot.z,
         xPercent: -50,
         yPercent: -50,
         skewY: skewAmount,
         transformOrigin: 'center center',
-        zIndex: index + 1, // Keep zIndex based on animation order (later cards on top)
+        zIndex: index + 1,               // urut naik: card 1 < 2 < 3
         force3D: true,
-        opacity: 0, // Start invisible for swipe-up effect
-        scale: 0.95, // Slightly smaller for entrance
+        opacity: 0,
+        scale: 0.95,
       });
     });
 
-    // Create separate pin and scrub triggers
+
+
     const totalCards = cards.length;
-    const pinDuration = totalCards * 1200; // Increased for better scroll control (3600px for 3 cards)
+    const pinDuration = totalCards * 1200;
 
-    // Separate pin trigger for stable pinning
-    ScrollTrigger.create({
-      trigger: containerRef.current,
-      start: 'top top',
-      end: `+=${pinDuration}`,
-      pin: true,
-      pinSpacing: true, // Add spacing so section stays pinned during animation
-    });
-
-    // Separate scrub timeline for animations
     const masterTl = gsap.timeline({
       scrollTrigger: {
-        trigger: containerRef.current,
+        trigger: sectionRef.current,
         start: 'top top',
         end: `+=${pinDuration}`,
-        scrub: true, // Unified scrub control for smooth scroll-following
-      }
+        scrub: 1,
+        pin: true,
+        pinSpacing: true,
+      },
     });
 
-    // Add card animations with proper staggering
-    const stagger = 1 / totalCards; // Distribute evenly across timeline
+    const stagger = 1 / totalCards;
     cards.forEach((card, index) => {
-      // Staggered start times: 0, 0.33, 0.66 for 3 cards
       const startTime = index * stagger;
-
-      // Animate opacity and scale only (preserve CardSwap positions)
-      masterTl.fromTo(card,
-        {
-          opacity: 0,
-          scale: 0.95,
-        },
-        {
-          opacity: 1,
-          scale: 1,
-          ease: 'power3.out',
-        },
-        startTime // Staggered start time
+      masterTl.fromTo(
+        card,
+        { opacity: 0, scale: 0.95 },
+        { opacity: 1, scale: 1, ease: 'power3.out' },
+        startTime
       );
     });
 
     animationStateRef.current.isInitialized = true;
 
-    // Cleanup function
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
       animationStateRef.current.isInitialized = false;
@@ -128,66 +100,51 @@ export const ProjectShowcaseScroll: React.FC<ProjectShowcaseScrollProps> = ({
   }, [projects]);
 
   return (
-    <div className="relative w-full min-h-screen bg-gradient-to-br from-background via-background to-cyan-950/10">
-      <div className="container mx-auto px-4 py-12">
-        <div
-          ref={containerRef}
-          className="grid grid-cols-1 lg:grid-cols-4 gap-8 min-h-screen"
-        >
-          {/* Left Panel - Fixed within pinned section */}
-          <div
-            ref={leftPanelRef}
-            className="lg:col-span-1 order-2 lg:order-1 flex flex-col justify-start pt-20"
-          >
-            <div className="text-center lg:text-left">
-              <h2 className="text-4xl font-bold text-foreground mb-6 bg-gradient-to-r from-foreground via-cyan-400 to-foreground bg-clip-text text-transparent">
-                Featured Projects
-              </h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                Explore my latest work and creative experiments. Each project showcases
-                different technologies and design approaches with interactive animations.
-              </p>
-            </div>
-            {/* Control panel removed - only static content */}
-          </div>
+    <section
+        ref={sectionRef}
+        className="relative bg-background overflow-hidden min-h-screen py-20"
+    >
+        <div className="container mx-auto px-20">
+            <div className="flex flex-col lg:flex-row items-center justify-center gap-16 h-full">
+                {/* Kolom Teks */}
+                <div className="flex-1 text-center lg:text-left max-w-2xl">
+                    <h2 className="text-4xl font-bold text-foreground bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent mb-4">
+                        Featured Projects
+                    </h2>
+                    <p className="text-muted-foreground leading-relaxed">
+                        Explore my latest work and creative experiments. Each project showcases
+                        different technologies and design approaches with interactive animations.
+                    </p>
+                </div>
 
-          {/* Right Panel - Scroll Controlled Cards */}
-          <div className="lg:col-span-3 relative order-1 lg:order-2 flex items-center justify-center">
-            <div
-              className="relative"
-              style={{
-                height: '100%', // Fill parent container
-                width: '800px',
-                maxWidth: '100%',
-              }}
-            >
-              <div className="relative w-full h-full overflow-hidden rounded-xl perspective-[900px]">
-                {projects.map((project, index) => (
-                  <div
-                    key={index}
-                    ref={(el) => {
-                      cardRefs.current[index] = el;
-                    }}
-                    className="absolute top-1/2 left-1/2 rounded-xl border border-cyan-500/20 bg-background/90 backdrop-blur-md shadow-lg hover:shadow-cyan-500/10 transition-all duration-500 hover:scale-105"
-                    style={{
-                      width: '100%',
-                      maxWidth: '400px',
-                      height: 'auto',
-                      minHeight: '300px',
-                      transformStyle: 'preserve-3d',
-                      pointerEvents: 'none',
-                    }}
-                  >
-                    <div className="p-6">
-                      <ProjectCard {...project} />
+                {/* Kolom Media */}
+                <div className="flex-1 flex justify-center lg:justify-end max-w-lg">
+                    <div className="relative w-full h-[60vh] sm:h-[70vh]">
+                        <div className="relative w-full h-full rounded-xl perspective-[900px]">
+                            {projects.map((project, index) => (
+                                <div
+                                    key={index}
+                                    ref={(el) => { cardRefs.current[index] = el; }}
+                                    className="absolute top-1/2 left-1/2 rounded-xl border border-primary/20 bg-background/90 backdrop-blur-md shadow-lg"
+                                    style={{
+                                        width: '100%',
+                                        maxWidth: '400px',
+                                        height: 'auto',
+                                        minHeight: '300px',
+                                        transformStyle: 'preserve-3d',
+                                        pointerEvents: 'none',
+                                    }}
+                                >
+                                    <div className="p-6">
+                                        <ProjectCard {...project} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
+    </section>
   );
 };

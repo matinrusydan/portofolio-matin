@@ -116,6 +116,12 @@
     html {
       scroll-behavior: auto; /* Prevent smooth scrolling interference */
     }
+
+    /* Section layering */
+    section {
+      position: relative;
+      z-index: 10;
+    }
   }
 
   .font-poppins {
@@ -228,4 +234,16 @@
     height: 20%; /* Tinggi gradien, bisa diatur antara 10-20% */
     background: linear-gradient(to top, black, transparent);
     pointer-events: none; /* Penting agar tidak menghalangi interaksi mouse */
+    /* Section layering */
+    section {
+      position: relative;
+      z-index: 10;
+    }
+
+    .lightrays-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
   }

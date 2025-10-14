@@ -21,7 +21,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   onConfigChange,
 }) => {
   return (
-    <div className="bg-background/95 backdrop-blur-md rounded-xl p-6 shadow-xl border border-cyan-500/20 hover:border-cyan-400/40 transition-all duration-300">
+    <div className="bg-background/95 backdrop-blur-md rounded-xl p-6 shadow-xl border border-primary/20 hover:border-primary/40 transition-all duration-300">
       <h3 className="text-lg font-semibold mb-6 text-foreground bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text">Animation Controls</h3>
 
       <div className="space-y-6">

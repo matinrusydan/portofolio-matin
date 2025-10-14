@@ -136,7 +136,7 @@ const SkillsNetwork = () => {
   }, [])
 
   return (
-    <div ref={containerRef} className="w-full h-screen bg-black text-white relative">
+    <div ref={containerRef} className="w-full h-screen bg-background text-white relative">
       <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
         <button onClick={() => setDebugMode(!debugMode)} className="bg-white text-black px-3 py-1.5 rounded">
           Debug: {debugMode ? "ON" : "OFF"}

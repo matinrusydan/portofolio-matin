@@ -92,12 +92,14 @@ export default React.memo(function EnergyLink({
       braidPts.push([x, y])
     }
     
+    // FIX: Tambahkan titik akhir eksplisit (coreCenter) untuk memastikan garis sampai ke tengah.
     const allPts: [number, number][] = [
       [actualStartPos.x, actualStartPos.y],
       [p1.x, p1.y],
       [p2.x, p2.y],
       [pBraidStart.x, pBraidStart.y],
       ...braidPts,
+      [coreCenter.x, coreCenter.y], // Titik ini memastikan garis menyambung sempurna.
     ]
 
     const line = d3

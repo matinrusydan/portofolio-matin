@@ -4,7 +4,6 @@ import SkillsNetwork from "@/components/SkillsNetwork";
 import { CertificatesShowcase } from "@/components/certificates/certificates-showcase"
 import { certificates } from "@/components/certificates/certificate-data"
 import { ContactForm } from "@/components/contact/contact-form"
-import { ProjectShowcase } from "@/components/ui/project-showcase"
 import { ProjectShowcaseScroll } from "@/components/ui/project-showcase-scroll";
 
 const profileData = {

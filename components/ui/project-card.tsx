@@ -18,7 +18,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   link,
 }) => {
   return (
-    <div className="bg-background/95 backdrop-blur-md text-foreground rounded-xl shadow-lg p-6 flex flex-col gap-4 border border-cyan-500/10 hover:border-cyan-400/30 hover:shadow-cyan-500/20 transition-all duration-500 h-full">
+    <div className="bg-background/95 backdrop-blur-md text-foreground rounded-xl shadow-lg p-6 flex flex-col gap-4 border border-primary/10 hover:border-primary/30 hover:shadow-primary/20 transition-all duration-500 h-full">
       {image && (
         <div className="w-full h-32 rounded-lg overflow-hidden bg-gradient-to-br from-muted to-muted/50">
           <img
@@ -40,7 +40,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             <Badge
               key={index}
               variant="secondary"
-              className="text-xs bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 hover:bg-cyan-500/20 transition-colors"
+              className="text-xs bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors"
             >
               {techItem}
             </Badge>
@@ -51,7 +51,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             href={link}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors text-sm font-medium group"
+            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors text-sm font-medium group"
           >
             View Project
             <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
