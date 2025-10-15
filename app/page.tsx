@@ -2,8 +2,8 @@ import { IntroSection } from "@/components/IntroSection";
 import { AboutSection } from "@/components/about-section";
 import SkillsNetwork from "@/components/SkillsNetwork";
 import { CertificatesShowcase } from "@/components/certificates/certificates-showcase"
+import { ProjectsShowcase } from "@/components/projects/projects-showcase"
 import { ContactForm } from "@/components/contact/contact-form"
-import { ProjectShowcaseScroll } from "@/components/ui/project-showcase-scroll";
 import { Suspense } from "react";
 
 const profileData = {
@@ -53,7 +53,7 @@ export default async function HomePage() {
       <AboutSection profile={profileData} />
       <SkillsNetwork />
       <Suspense fallback={<div>Loading projects...</div>}>
-        <ProjectShowcaseScroll projects={projects} />
+        <ProjectsShowcase items={projects} />
       </Suspense>
       <Suspense fallback={<div>Loading certificates...</div>}>
         <CertificatesShowcase items={certificates} />

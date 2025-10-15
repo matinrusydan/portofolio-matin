@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
@@ -23,8 +23,6 @@ export function ProjectForm({ initialData, onSubmit, onCancel }: ProjectFormProp
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [techInput, setTechInput] = useState('')
   const [techStack, setTechStack] = useState<string[]>(initialData?.techStack || [])
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const form = useForm<ProjectFormData>({
     resolver: zodResolver(projectSchema),
@@ -38,49 +36,33 @@ export function ProjectForm({ initialData, onSubmit, onCancel }: ProjectFormProp
     }
   })
 
+  // Keep RHF value in sync with local state for array field
+  useEffect(() => {
+    form.setValue('techStack', techStack, { shouldValidate: true })
+  }, [techStack, form])
+
   const handleFormSubmit = async (data: ProjectFormData) => {
-    console.log('handleFormSubmit called with data:', data);
-    console.log('Tech stack state:', techStack);
+    console.log('Form submit triggered with data:', data)
+    console.log('TechStack from state:', techStack)
 
-    // Validate tech stack
-    if (techStack.length === 0) {
-      console.error('Tech stack is empty - validation failed');
-      setSubmitError('Please add at least one technology to the tech stack.');
-      return;
+    const formData = new FormData()
+
+    if (initialData?.id) {
+      formData.append('id', initialData.id)
     }
 
-    setIsSubmitting(true);
-    setSubmitError(null);
+    formData.append('title', data.title)
+    formData.append('description', data.description)
+    formData.append('techStack', JSON.stringify(techStack))
+    formData.append('projectLink', data.projectLink || '')
+    formData.append('isFeatured', data.isFeatured.toString())
+    formData.append('orderIndex', data.orderIndex.toString())
 
-    try {
-      const formData = new FormData()
-
-      if (initialData?.id) {
-        formData.append('id', initialData.id)
-      }
-
-      formData.append('title', data.title)
-      formData.append('description', data.description)
-      formData.append('techStack', JSON.stringify(techStack))
-      formData.append('projectLink', data.projectLink || '')
-      formData.append('isFeatured', data.isFeatured.toString())
-      formData.append('orderIndex', data.orderIndex.toString())
-
-      if (selectedImage) {
-        formData.append('image', selectedImage)
-      }
-
-      console.log('FormData prepared:', Array.from(formData.entries()));
-      console.log('Calling onSubmit...');
-      await onSubmit(formData)
-      console.log('onSubmit completed successfully');
-    } catch (error) {
-      console.error('Form submission error:', error);
-      setSubmitError(error instanceof Error ? error.message : 'Terjadi kesalahan saat menyimpan');
-      throw error; // Re-throw to let React Hook Form handle it
-    } finally {
-      setIsSubmitting(false);
+    if (selectedImage) {
+      formData.append('image', selectedImage)
     }
+
+    await onSubmit(formData)
   }
 
   const addTech = () => {
@@ -179,6 +161,25 @@ export function ProjectForm({ initialData, onSubmit, onCancel }: ProjectFormProp
                   </Badge>
                 ))}
               </div>
+              {/* Hidden input to register techStack field with react-hook-form, and normalize to array */}
+              <input
+                type="hidden"
+                value={JSON.stringify(techStack)}
+                {...form.register('techStack', {
+                  setValueAs: (v) => {
+                    try {
+                      return typeof v === 'string' ? JSON.parse(v || '[]') : Array.isArray(v) ? v : []
+                    } catch {
+                      return []
+                    }
+                  },
+                })}
+              />
+              {form.formState.errors.techStack && (
+                <p className="text-sm text-destructive">
+                  {String(form.formState.errors.techStack.message)}
+                </p>
+              )}
             </div>
 
             <div className="flex items-center space-x-2">
@@ -214,20 +215,14 @@ export function ProjectForm({ initialData, onSubmit, onCancel }: ProjectFormProp
           </div>
         </div>
 
-        {submitError && (
-          <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md p-3">
-            {submitError}
-          </div>
-        )}
-
         <div className="flex justify-end space-x-2">
           {onCancel && (
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancel
             </Button>
           )}
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : (initialData?.id ? 'Update Project' : 'Create Project')}
+          <Button type="submit">
+            {initialData?.id ? 'Update Project' : 'Create Project'}
           </Button>
         </div>
       </form>

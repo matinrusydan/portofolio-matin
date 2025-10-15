@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { projectSchema } from '@/lib/validations'
-import { saveFile } from '@/lib/file-storage'
+import { saveFile } from '@/lib/file-storage' // Aligned with Certificate API imports
 
 export async function GET(request: NextRequest) {
   try {
@@ -51,40 +51,29 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  console.log('[API] POST /api/projects called', new Date().toISOString());
-
   try {
     const formData = await request.formData()
-    console.log('[API] FormData received:', Array.from(formData.entries()).map(([k, v]) => [k, typeof v === 'string' ? v : `File: ${v.name}`]));
 
-    const rawTechStack = formData.get('techStack') as string;
-    console.log('[API] Raw techStack value:', rawTechStack);
-
+    // Parse form data - aligned with Certificate API pattern
     const data = {
       title: formData.get('title') as string,
       description: formData.get('description') as string,
-      techStack: JSON.parse(rawTechStack || '[]'),
+      techStack: JSON.parse(formData.get('techStack') as string || '[]'),
       projectLink: formData.get('projectLink') as string || undefined,
       isFeatured: formData.get('isFeatured') === 'true',
       orderIndex: parseInt(formData.get('orderIndex') as string) || 0,
     }
 
-    console.log('[API] Parsed data:', data);
-
-    // Validate data
+    // Validate data - aligned with Certificate API pattern
     projectSchema.parse(data)
-    console.log('[API] Validation passed');
 
-    // Handle image upload using local storage
+    // Handle image upload using local storage - aligned with Certificate API pattern
     let imagePath = null
     const imageFile = formData.get('image') as File
     if (imageFile) {
-      console.log('[API] Image file received:', imageFile.name, imageFile.size);
       imagePath = await saveFile(imageFile, 'project')
-      console.log('[API] Image saved at:', imagePath);
     }
 
-    console.log('[API] Creating project in database...');
     const project = await prisma.project.create({
       data: {
         ...data,
@@ -92,11 +81,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    console.log('[API] Project created successfully:', project.id);
     return NextResponse.json(project)
   } catch (error) {
-    console.error('[API] POST project error:', error)
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create project'
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    console.error('POST project error:', error)
+    return NextResponse.json({ error: 'Failed to create project' }, { status: 500 })
   }
 }

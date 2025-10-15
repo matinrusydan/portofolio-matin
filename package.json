@@ -6,7 +6,10 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "test": "vitest",
+    "test:forms": "vitest run test/form-audit.test.tsx --reporter=verbose",
+    "test:forms:report": "vitest run test/form-audit.test.tsx --reporter=json > logs/form-audit-$(date +%Y%m%d-%H%M%S).json"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
@@ -81,13 +84,18 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.9",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/d3": "^7.4.3",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "jsdom": "^27.0.0",
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.3.3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }

@@ -100,7 +100,7 @@ export default function CertificatesPage() {
           <h1 className="text-3xl font-bold">Certificates</h1>
           <p className="text-muted-foreground">Manage your certificates and achievements</p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen} modal={false}>
           <DialogTrigger asChild>
             <Button onClick={handleCreate}>
               <Plus className="h-4 w-4 mr-2" />

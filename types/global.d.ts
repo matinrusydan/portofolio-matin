@@ -18,3 +18,18 @@ export interface Certificate {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Project {
+  id: string;
+  title: string;
+  description: string;
+  techStack: string[];
+  image?: string;
+  imagePath?: string;
+  projectLink?: string;
+  githubLink?: string;
+  isFeatured: boolean;
+  orderIndex: number;
+  createdAt: string;
+  updatedAt: string;
+}

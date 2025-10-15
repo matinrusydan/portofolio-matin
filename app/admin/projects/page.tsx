@@ -6,7 +6,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ProjectForm } from '@/components/admin/ProjectForm'
 import { Plus, Edit, Trash2 } from 'lucide-react'
 import Image from 'next/image'
-import toast from 'react-hot-toast'
+import { toast } from 'sonner'
+
+// Aligned with Certificate page pattern - no toast import, using console for feedback
 
 interface Project {
   id: string
@@ -26,7 +28,6 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     fetchProjects()
@@ -45,40 +46,23 @@ export default function ProjectsPage() {
   }
 
   const handleSubmit = async (formData: FormData) => {
-    console.log('handleSubmit called with formData:', Array.from(formData.entries()));
-
-    setIsSubmitting(true);
-
     try {
       const url = editingProject ? `/api/projects/${editingProject.id}` : '/api/projects'
       const method = editingProject ? 'PUT' : 'POST'
-
-      console.log('Making fetch request:', { url, method, isCreate: !editingProject });
 
       const response = await fetch(url, {
         method,
         body: formData,
       })
 
-      console.log('Response received:', { status: response.status, ok: response.ok, url, method });
-
       if (response.ok) {
-        console.log('Response OK, refreshing projects...');
         await fetchProjects()
         setDialogOpen(false)
         setEditingProject(null)
-        toast.success('Project berhasil dibuat!')
-        console.log('Project saved successfully');
-      } else {
-        const errorText = await response.text();
-        console.error('Response not OK:', { status: response.status, errorText });
-        toast.error(`Terjadi kesalahan: ${errorText || 'Silakan coba lagi.'}`)
+        toast.success(editingProject ? 'Project berhasil diperbarui!' : 'Project berhasil dibuat!')
       }
     } catch (error) {
       console.error('Failed to save project:', error)
-      toast.error('Terjadi kesalahan jaringan. Silakan coba lagi.')
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
@@ -97,13 +81,12 @@ export default function ProjectsPage() {
 
       if (response.ok) {
         await fetchProjects()
-        toast.success('Project deleted successfully.')
+        toast.success('Project berhasil dihapus!')
       } else {
-        toast.error('Failed to delete project.')
+        toast.error('Gagal menghapus project.')
       }
     } catch (error) {
       console.error('Failed to delete project:', error)
-      toast.error('Failed to delete project.')
     }
   }
 
@@ -124,12 +107,13 @@ export default function ProjectsPage() {
           <h1 className="text-3xl font-bold">Projects</h1>
           <p className="text-muted-foreground">Manage your portfolio projects</p>
         </div>
-        <Button onClick={handleCreate} type="button" disabled={isSubmitting}>
-          <Plus className="h-4 w-4 mr-2" />
-          {isSubmitting ? 'Creating...' : 'Add Project'}
-        </Button>
-
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen} modal={false}>
+          <DialogTrigger asChild>
+            <Button onClick={handleCreate}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Project
+            </Button>
+          </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
