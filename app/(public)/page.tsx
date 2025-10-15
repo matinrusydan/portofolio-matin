@@ -5,6 +5,7 @@ import { CertificatesShowcase } from "@/components/certificates/certificates-sho
 import { ProjectShowcaseScroll } from "@/components/ui/project-showcase-scroll"
 import { ContactForm } from "@/components/contact/contact-form"
 import { Suspense } from "react";
+import { apiEndpoints } from "@/lib/api";
 
 const profileData = {
   name: 'Matin Rusydan',
@@ -15,29 +16,32 @@ const profileData = {
 
 async function getProjects() {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/projects?featured=true&limit=3`, {
-      cache: 'no-store'
-    });
-    if (!response.ok) throw new Error('Failed to fetch projects');
+    const response = await fetch(`${apiEndpoints.projects}?featured=true&limit=3`);
+    if (!response.ok) {
+      console.error('❌ Projects fetch failed:', response.status, await response.text());
+      return [];
+    }
     const data = await response.json();
-    console.log('Fetched projects for GSAP showcase:', data.projects?.length || 0);
+    console.log('✅ Projects fetched:', data.projects?.length || 0);
     return data.projects?.slice(0, 3) || [];
   } catch (error) {
-    console.error('Error fetching projects:', error);
+    console.error('❌ Projects JSON parse or network error:', error);
     return [];
   }
 }
 
 async function getCertificates() {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/certificates?featured=true`, {
-      cache: 'no-store'
-    });
-    if (!response.ok) throw new Error('Failed to fetch certificates');
+    const response = await fetch(`${apiEndpoints.certificates}?featured=true`);
+    if (!response.ok) {
+      console.error('❌ Certificates fetch failed:', response.status, await response.text());
+      return [];
+    }
     const data = await response.json();
+    console.log('✅ Certificates fetched:', data.certificates?.length || 0);
     return data.certificates || [];
   } catch (error) {
-    console.error('Error fetching certificates:', error);
+    console.error('❌ Certificates JSON parse or network error:', error);
     return [];
   }
 }

@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import toast from "react-hot-toast"
 import { cn } from "@/lib/utils"
+import { apiEndpoints } from "@/lib/api"
 
 const Schema = z.object({
   name: z.string().min(2, "Name is too short"),
@@ -42,7 +43,7 @@ export function ContactForm({
   async function onSubmit(values: Values) {
     setLoading(true)
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch(apiEndpoints.contact, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

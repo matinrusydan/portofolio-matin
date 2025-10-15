@@ -12,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { ImageUpload } from './ImageUpload'
 import { projectSchema, ProjectFormData } from '@/lib/validations'
 import { X, Plus } from 'lucide-react'
+import { getUploadUrl } from '@/lib/api'
 
 interface ProjectFormProps {
   initialData?: Partial<ProjectFormData & { id: string; imagePath?: string }>
@@ -197,7 +198,7 @@ export function ProjectForm({ initialData, onSubmit, onCancel }: ProjectFormProp
               <ImageUpload
                 onImageSelect={setSelectedImage}
                 currentImage={initialData?.imagePath ?
-                  `/uploads/${initialData.imagePath}`
+                  getUploadUrl(initialData.imagePath)
                   : undefined
                 }
               />

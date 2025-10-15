@@ -7,6 +7,10 @@ import { Suspense } from "react"
 import "./globals.css"
 import { Background } from "../components/Background"
 import { Toaster } from 'react-hot-toast'
+import { resolveBaseUrl } from "../lib/resolve-base-url"
+
+// Log BASE_URL on app start
+console.log("🌐 Active BASE_URL:", resolveBaseUrl());
 
 export const metadata: Metadata = {
   title: "Matin Rusydan",

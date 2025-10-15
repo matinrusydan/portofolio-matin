@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { CertificateForm } from '@/components/admin/CertificateForm'
 import { Plus, Edit, Trash2, ExternalLink } from 'lucide-react'
 import Image from 'next/image'
+import { apiEndpoints } from '@/lib/api'
 
 interface Certificate {
   id: string
@@ -33,7 +34,7 @@ export default function CertificatesPage() {
 
   const fetchCertificates = async () => {
     try {
-      const response = await fetch('/api/certificates')
+      const response = await fetch(apiEndpoints.certificates)
       const data = await response.json()
       setCertificates(data.certificates)
     } catch (error) {
@@ -45,7 +46,7 @@ export default function CertificatesPage() {
 
   const handleSubmit = async (formData: FormData) => {
     try {
-      const url = editingCertificate ? `/api/certificates/${editingCertificate.id}` : '/api/certificates'
+      const url = editingCertificate ? `${apiEndpoints.certificates}/${editingCertificate.id}` : apiEndpoints.certificates
       const method = editingCertificate ? 'PUT' : 'POST'
 
       const response = await fetch(url, {
@@ -72,7 +73,7 @@ export default function CertificatesPage() {
     if (!confirm('Are you sure you want to delete this certificate?')) return
 
     try {
-      const response = await fetch(`/api/certificates/${id}`, {
+      const response = await fetch(`${apiEndpoints.certificates}/${id}`, {
         method: 'DELETE',
       })
 

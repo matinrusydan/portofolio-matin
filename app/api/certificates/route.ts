@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { certificateSchema } from '@/lib/validations'
 import { saveFile, deleteFile } from '@/lib/file-storage'
+import { handleCORS } from '@/lib/cors'
 
 export async function GET(request: NextRequest) {
+  const corsHeaders = handleCORS(request)
+  if (corsHeaders instanceof NextResponse) return corsHeaders
   try {
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
@@ -47,14 +50,17 @@ export async function GET(request: NextRequest) {
         total,
         pages: Math.ceil(total / limit)
       }
-    })
+    }, { headers: corsHeaders })
   } catch (error) {
     console.error('GET certificates error:', error)
-    return NextResponse.json({ error: 'Failed to fetch certificates' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to fetch certificates' }, { status: 500, headers: corsHeaders })
   }
 }
 
 export async function POST(request: NextRequest) {
+  const corsHeaders = handleCORS(request)
+  if (corsHeaders instanceof NextResponse) return corsHeaders
+
   try {
     const formData = await request.formData()
 
@@ -86,9 +92,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    return NextResponse.json(certificate)
+    return NextResponse.json(certificate, { headers: corsHeaders })
   } catch (error) {
     console.error('POST certificate error:', error)
-    return NextResponse.json({ error: 'Failed to create certificate' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to create certificate' }, { status: 500, headers: corsHeaders })
   }
 }

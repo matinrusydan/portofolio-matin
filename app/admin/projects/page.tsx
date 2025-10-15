@@ -7,6 +7,7 @@ import { ProjectForm } from '@/components/admin/ProjectForm'
 import { Plus, Edit, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import { toast } from 'sonner'
+import { apiEndpoints } from '@/lib/api'
 
 // Aligned with Certificate page pattern - no toast import, using console for feedback
 
@@ -35,7 +36,7 @@ export default function ProjectsPage() {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch('/api/projects')
+      const response = await fetch(apiEndpoints.projects)
       const data = await response.json()
       setProjects(data.projects)
     } catch (error) {
@@ -47,7 +48,7 @@ export default function ProjectsPage() {
 
   const handleSubmit = async (formData: FormData) => {
     try {
-      const url = editingProject ? `/api/projects/${editingProject.id}` : '/api/projects'
+      const url = editingProject ? `${apiEndpoints.projects}/${editingProject.id}` : apiEndpoints.projects
       const method = editingProject ? 'PUT' : 'POST'
 
       const response = await fetch(url, {
@@ -75,7 +76,7 @@ export default function ProjectsPage() {
     if (!confirm('Are you sure you want to delete this project?')) return
 
     try {
-      const response = await fetch(`/api/projects/${id}`, {
+      const response = await fetch(`${apiEndpoints.projects}/${id}`, {
         method: 'DELETE',
       })
 

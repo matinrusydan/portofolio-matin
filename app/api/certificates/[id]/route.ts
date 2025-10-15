@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { saveFile, deleteFile } from '@/lib/file-storage'
+import { handleCORS } from '@/lib/cors'
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const corsHeaders = handleCORS(request)
+  if (corsHeaders instanceof NextResponse) return corsHeaders
+
   try {
     const { id } = await params
     const certificate = await prisma.certificate.findUnique({
@@ -13,13 +17,13 @@ export async function GET(
     })
 
     if (!certificate) {
-      return NextResponse.json({ error: 'Certificate not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Certificate not found' }, { status: 404, headers: corsHeaders })
     }
 
-    return NextResponse.json(certificate)
+    return NextResponse.json(certificate, { headers: corsHeaders })
   } catch (error) {
     console.error('GET certificate error:', error)
-    return NextResponse.json({ error: 'Failed to fetch certificate' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to fetch certificate' }, { status: 500, headers: corsHeaders })
   }
 }
 
@@ -27,6 +31,9 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const corsHeaders = handleCORS(request)
+  if (corsHeaders instanceof NextResponse) return corsHeaders
+
   try {
     const { id } = await params
     const formData = await request.formData()
@@ -69,10 +76,10 @@ export async function PUT(
       }
     })
 
-    return NextResponse.json(certificate)
+    return NextResponse.json(certificate, { headers: corsHeaders })
   } catch (error) {
     console.error('PUT certificate error:', error)
-    return NextResponse.json({ error: 'Failed to update certificate' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to update certificate' }, { status: 500, headers: corsHeaders })
   }
 }
 
@@ -80,6 +87,9 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const corsHeaders = handleCORS(request)
+  if (corsHeaders instanceof NextResponse) return corsHeaders
+
   try {
     const { id } = await params
     // Delete image from storage
@@ -97,9 +107,9 @@ export async function DELETE(
       where: { id }
     })
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true }, { headers: corsHeaders })
   } catch (error) {
     console.error('DELETE certificate error:', error)
-    return NextResponse.json({ error: 'Failed to delete certificate' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to delete certificate' }, { status: 500, headers: corsHeaders })
   }
 }

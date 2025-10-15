@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Mail, Eye, Archive, Trash2, Reply } from 'lucide-react'
+import { apiEndpoints } from '@/lib/api'
 
 interface ContactMessage {
   id: string
@@ -39,7 +40,7 @@ export default function MessagesPage() {
 
   const fetchMessages = async () => {
     try {
-      const response = await fetch('/api/contact')
+      const response = await fetch(apiEndpoints.contact)
       const data = await response.json()
       setMessages(data.messages)
     } catch (error) {
@@ -51,7 +52,7 @@ export default function MessagesPage() {
 
   const updateMessageStatus = async (id: string, status: string) => {
     try {
-      const response = await fetch(`/api/contact/${id}`, {
+      const response = await fetch(`${apiEndpoints.contact}/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
@@ -69,7 +70,7 @@ export default function MessagesPage() {
     if (!confirm('Are you sure you want to delete this message?')) return
 
     try {
-      const response = await fetch(`/api/contact/${id}`, {
+      const response = await fetch(`${apiEndpoints.contact}/${id}`, {
         method: 'DELETE',
       })
 
