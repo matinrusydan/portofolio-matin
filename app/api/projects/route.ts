@@ -11,6 +11,8 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || ''
     const featured = searchParams.get('featured')
 
+    console.log('GET /api/projects with limit:', limit, 'featured:', featured)
+
     const where: any = {}
 
     if (search) {
@@ -72,6 +74,7 @@ export async function POST(request: NextRequest) {
     const imageFile = formData.get('image') as File
     if (imageFile) {
       imagePath = await saveFile(imageFile, 'project')
+      console.log('Image uploaded:', imagePath)
     }
 
     const project = await prisma.project.create({

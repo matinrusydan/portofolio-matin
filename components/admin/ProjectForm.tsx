@@ -53,7 +53,7 @@ export function ProjectForm({ initialData, onSubmit, onCancel }: ProjectFormProp
 
     formData.append('title', data.title)
     formData.append('description', data.description)
-    formData.append('techStack', JSON.stringify(techStack))
+    formData.append('techStack', JSON.stringify(data.techStack))
     formData.append('projectLink', data.projectLink || '')
     formData.append('isFeatured', data.isFeatured.toString())
     formData.append('orderIndex', data.orderIndex.toString())
@@ -134,53 +134,43 @@ export function ProjectForm({ initialData, onSubmit, onCancel }: ProjectFormProp
               )}
             />
 
-            <div className="space-y-2">
-              <FormLabel>Technologies</FormLabel>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Add technology"
-                  value={techInput}
-                  onChange={(e) => setTechInput(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                />
-                <Button type="button" onClick={addTech} size="sm">
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {techStack.map((tech) => (
-                  <Badge key={tech} variant="secondary" className="flex items-center gap-1">
-                    {tech}
-                    <button
-                      type="button"
-                      onClick={() => removeTech(tech)}
-                      className="ml-1 hover:bg-destructive hover:text-destructive-foreground rounded-full p-0.5"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-              {/* Hidden input to register techStack field with react-hook-form, and normalize to array */}
-              <input
-                type="hidden"
-                value={JSON.stringify(techStack)}
-                {...form.register('techStack', {
-                  setValueAs: (v) => {
-                    try {
-                      return typeof v === 'string' ? JSON.parse(v || '[]') : Array.isArray(v) ? v : []
-                    } catch {
-                      return []
-                    }
-                  },
-                })}
-              />
-              {form.formState.errors.techStack && (
-                <p className="text-sm text-destructive">
-                  {String(form.formState.errors.techStack.message)}
-                </p>
+            <FormField
+              control={form.control}
+              name="techStack"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Technologies</FormLabel>
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Add technology"
+                        value={techInput}
+                        onChange={(e) => setTechInput(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                      />
+                      <Button type="button" onClick={addTech} size="sm">
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {techStack.map((tech) => (
+                        <Badge key={tech} variant="secondary" className="flex items-center gap-1">
+                          {tech}
+                          <button
+                            type="button"
+                            onClick={() => removeTech(tech)}
+                            className="ml-1 hover:bg-destructive hover:text-destructive-foreground rounded-full p-0.5"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
 
             <div className="flex items-center space-x-2">
               <FormField

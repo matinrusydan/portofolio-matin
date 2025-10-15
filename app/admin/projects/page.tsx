@@ -135,7 +135,7 @@ export default function ProjectsPage() {
             {project.imagePath && (
               <div className="relative w-full h-32 rounded-lg overflow-hidden">
                 <Image
-                  src={`/uploads/${project.imagePath}`}
+                  src={project.imagePath}
                   alt={project.title}
                   fill
                   className="object-cover"

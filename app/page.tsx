@@ -2,7 +2,7 @@ import { IntroSection } from "@/components/IntroSection";
 import { AboutSection } from "@/components/about-section";
 import SkillsNetwork from "@/components/SkillsNetwork";
 import { CertificatesShowcase } from "@/components/certificates/certificates-showcase"
-import { ProjectsShowcase } from "@/components/projects/projects-showcase"
+import { ProjectShowcaseScroll } from "@/components/ui/project-showcase-scroll"
 import { ContactForm } from "@/components/contact/contact-form"
 import { Suspense } from "react";
 
@@ -15,12 +15,13 @@ const profileData = {
 
 async function getProjects() {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/projects?featured=true`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/projects?featured=true&limit=3`, {
       cache: 'no-store'
     });
     if (!response.ok) throw new Error('Failed to fetch projects');
     const data = await response.json();
-    return data.projects || [];
+    console.log('Fetched projects for GSAP showcase:', data.projects?.length || 0);
+    return data.projects?.slice(0, 3) || [];
   } catch (error) {
     console.error('Error fetching projects:', error);
     return [];
@@ -53,7 +54,7 @@ export default async function HomePage() {
       <AboutSection profile={profileData} />
       <SkillsNetwork />
       <Suspense fallback={<div>Loading projects...</div>}>
-        <ProjectsShowcase items={projects} />
+        <ProjectShowcaseScroll projects={projects.slice(0, 3)} />
       </Suspense>
       <Suspense fallback={<div>Loading certificates...</div>}>
         <CertificatesShowcase items={certificates} />

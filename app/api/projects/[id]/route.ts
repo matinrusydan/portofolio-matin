@@ -41,31 +41,34 @@ export async function PUT(
     }
 
     // Handle image upload using local storage
-    let imagePath = null
+    let newImagePath = null
     const imageFile = formData.get('image') as File
     if (imageFile) {
-      // Delete old image if exists
-      const currentProject = await prisma.project.findUnique({
-        where: { id },
-        select: { imagePath: true }
-      })
-
-      if (currentProject?.imagePath) {
-        await deleteFile(currentProject.imagePath)
-      }
-
-      // Upload new image
-      imagePath = await saveFile(imageFile, 'project')
+      // Upload new image first
+      newImagePath = await saveFile(imageFile, 'project')
+      console.log('New image uploaded:', newImagePath)
     }
 
     const project = await prisma.project.update({
       where: { id },
       data: {
         ...data,
-        ...(imagePath && { imagePath }),
+        ...(newImagePath && { imagePath: newImagePath }),
         updatedAt: new Date()
       }
     })
+
+    // Delete old image only after successful update
+    if (newImagePath) {
+      const oldProject = await prisma.project.findUnique({
+        where: { id },
+        select: { imagePath: true }
+      })
+      if (oldProject?.imagePath && oldProject.imagePath !== newImagePath) {
+        await deleteFile(oldProject.imagePath)
+        console.log('Old image deleted:', oldProject.imagePath)
+      }
+    }
 
     return NextResponse.json(project)
   } catch (error) {

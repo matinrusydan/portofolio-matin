@@ -34,6 +34,7 @@ export const ProjectShowcaseScroll: React.FC<ProjectShowcaseScrollProps> = ({
     if (!sectionRef.current || animationStateRef.current.isInitialized) return;
 
     const cards = cardRefs.current.filter(Boolean) as HTMLDivElement[];
+    console.log('Initializing GSAP timeline for', cards.length, 'projects');
 
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 
@@ -93,8 +94,10 @@ export const ProjectShowcaseScroll: React.FC<ProjectShowcaseScrollProps> = ({
     });
 
     animationStateRef.current.isInitialized = true;
+    console.log('GSAP timeline initialized successfully');
 
     return () => {
+      console.log('Cleaning up GSAP timeline');
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
       animationStateRef.current.isInitialized = false;
     };
