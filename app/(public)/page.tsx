@@ -5,7 +5,7 @@ import { CertificatesShowcase } from "@/components/certificates/certificates-sho
 import { ProjectShowcaseScroll } from "@/components/ui/project-showcase-scroll"
 import { ContactForm } from "@/components/contact/contact-form"
 import { Suspense } from "react";
-import { apiEndpoints } from "@/lib/api";
+import { getBaseUrl } from "@/lib/api";
 
 const profileData = {
   name: 'Matin Rusydan',
@@ -16,7 +16,12 @@ const profileData = {
 
 async function getProjects() {
   try {
-    const response = await fetch(`${apiEndpoints.projects}?featured=true&limit=3`);
+    // During build time, skip fetch to avoid connection errors
+    if (process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE === 'phase-production-build') {
+      console.log('⏭️ Skipping projects fetch during build');
+      return [];
+    }
+    const response = await fetch(`${getBaseUrl()}/api/projects?featured=true&limit=3`);
     if (!response.ok) {
       console.error('❌ Projects fetch failed:', response.status, await response.text());
       return [];
@@ -32,7 +37,12 @@ async function getProjects() {
 
 async function getCertificates() {
   try {
-    const response = await fetch(`${apiEndpoints.certificates}?featured=true`);
+    // During build time, skip fetch to avoid connection errors
+    if (process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE === 'phase-production-build') {
+      console.log('⏭️ Skipping certificates fetch during build');
+      return [];
+    }
+    const response = await fetch(`${getBaseUrl()}/api/certificates?featured=true`);
     if (!response.ok) {
       console.error('❌ Certificates fetch failed:', response.status, await response.text());
       return [];

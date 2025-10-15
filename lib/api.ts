@@ -1,5 +1,5 @@
 // lib/api.ts
-export const getBaseUrl = () => {
+export function getBaseUrl() {
   if (typeof window !== "undefined") {
     // Client side
     return process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
@@ -7,12 +7,12 @@ export const getBaseUrl = () => {
     // Server side
     return process.env.BASE_URL || "http://localhost:3000";
   }
-};
+}
 
 export const BASE_URL = getBaseUrl();
 
-if (process.env.NODE_ENV === "development") {
-  console.log("🌍 Active BASE_URL:", BASE_URL);
+if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "production") {
+  console.log("🌐 Active BASE_URL:", BASE_URL);
 }
 
 export const apiEndpoints = {
