@@ -25,7 +25,8 @@ async function getStats() {
       projects: 0,
       certificates: 0,
       messages: 0,
-      unreadMessages: 0
+      unreadMessages: 0,
+      error: 'Database connection failed'
     }
   }
 }
