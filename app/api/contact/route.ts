@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { contactMessageSchema } from '@/lib/validations'
-import { handleCORS } from '@/lib/cors'
+import { withCors } from '@/lib/cors'
 
-export async function GET(request: NextRequest) {
-  const corsHeaders = handleCORS(request)
-  if (corsHeaders instanceof NextResponse) return corsHeaders
+export const GET = withCors(async (request: NextRequest) => {
   try {
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
@@ -45,16 +43,14 @@ export async function GET(request: NextRequest) {
         total,
         pages: Math.ceil(total / limit)
       }
-    }, { headers: corsHeaders })
+    })
   } catch (error) {
     console.error('GET contact messages error:', error)
-    return NextResponse.json({ error: 'Failed to fetch messages' }, { status: 500, headers: corsHeaders })
+    return NextResponse.json({ error: 'Failed to fetch messages' }, { status: 500 })
   }
-}
+})
 
-export async function POST(request: NextRequest) {
-  const corsHeaders = handleCORS(request)
-  if (corsHeaders instanceof NextResponse) return corsHeaders
+export const POST = withCors(async (request: NextRequest) => {
 
   try {
     const body = await request.json()
@@ -73,9 +69,9 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    return NextResponse.json(message, { headers: corsHeaders })
+    return NextResponse.json(message)
   } catch (error) {
     console.error('POST contact message error:', error)
-    return NextResponse.json({ error: 'Failed to send message' }, { status: 500, headers: corsHeaders })
+    return NextResponse.json({ error: 'Failed to send message' }, { status: 500 })
   }
-}
+})

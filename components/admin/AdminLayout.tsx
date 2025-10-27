@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import {
@@ -11,7 +11,8 @@ import {
   Award,
   Mail,
   Menu,
-  Settings
+  Settings,
+  LogOut
 } from 'lucide-react'
 
 const navigation = [
@@ -23,7 +24,54 @@ const navigation = [
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Check authentication status
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/check', { method: 'GET' })
+        if (response.ok) {
+          setIsAuthenticated(true)
+        } else {
+          // Only redirect if not already on login page
+          if (pathname !== '/admin/login') {
+            router.push('/admin/login')
+          }
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error)
+        if (pathname !== '/admin/login') {
+          router.push('/admin/login')
+        }
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    checkAuth()
+  }, [pathname, router])
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      setIsAuthenticated(false)
+      router.push('/admin/login')
+    } catch (error) {
+      console.error('Logout failed:', error)
+    }
+  }
+
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+  }
+
+  if (!isAuthenticated && pathname !== '/admin/login') {
+    return null // Prevent flash of content
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -35,13 +83,13 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64">
-          <AdminSidebar pathname={pathname} onNavigate={() => setSidebarOpen(false)} />
+          <AdminSidebar pathname={pathname} onNavigate={() => setSidebarOpen(false)} onLogout={handleLogout} />
         </SheetContent>
       </Sheet>
 
       {/* Desktop sidebar */}
       <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
-        <AdminSidebar pathname={pathname} />
+        <AdminSidebar pathname={pathname} onLogout={handleLogout} />
       </div>
 
       {/* Main content */}
@@ -54,9 +102,10 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   )
 }
 
-function AdminSidebar({ pathname, onNavigate }: {
+function AdminSidebar({ pathname, onNavigate, onLogout }: {
   pathname: string
   onNavigate?: () => void
+  onLogout?: () => void
 }) {
   return (
     <div className="flex flex-col h-full bg-card border-r">
@@ -83,6 +132,16 @@ function AdminSidebar({ pathname, onNavigate }: {
           )
         })}
       </nav>
+      <div className="p-4 border-t">
+        <Button
+          variant="ghost"
+          onClick={onLogout}
+          className="w-full justify-start text-muted-foreground hover:text-foreground"
+        >
+          <LogOut className="mr-3 h-5 w-5" />
+          Logout
+        </Button>
+      </div>
     </div>
   )
 }
