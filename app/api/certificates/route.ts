@@ -6,12 +6,15 @@ import { withCors } from '@/lib/cors'
 
 export const GET = withCors(async (request: NextRequest) => {
   try {
+    console.log('🔍 GET certificates: Starting request')
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
     const search = searchParams.get('search') || ''
     const category = searchParams.get('category')
     const featured = searchParams.get('featured')
+
+    console.log('🔍 GET certificates: Params - page:', page, 'limit:', limit, 'search:', search, 'category:', category, 'featured:', featured)
 
     const where: any = {}
 
@@ -30,6 +33,9 @@ export const GET = withCors(async (request: NextRequest) => {
       where.isFeatured = featured === 'true'
     }
 
+    console.log('🔍 GET certificates: Where clause:', JSON.stringify(where))
+
+    console.log('🔍 GET certificates: Attempting database connection and query')
     const [certificates, total] = await Promise.all([
       prisma.certificate.findMany({
         where,
@@ -39,6 +45,8 @@ export const GET = withCors(async (request: NextRequest) => {
       }),
       prisma.certificate.count({ where })
     ])
+
+    console.log('🔍 GET certificates: Query successful - certificates count:', certificates.length, 'total:', total)
 
     return NextResponse.json({
       certificates,
@@ -50,7 +58,12 @@ export const GET = withCors(async (request: NextRequest) => {
       }
     })
   } catch (error) {
-    console.error('GET certificates error:', error)
+    console.error('❌ GET certificates error:', error)
+    console.error('❌ GET certificates error details:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : String(error)
+    })
     return NextResponse.json({ error: 'Failed to fetch certificates' }, { status: 500 })
   }
 })
