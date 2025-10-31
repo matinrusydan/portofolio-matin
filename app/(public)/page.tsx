@@ -51,7 +51,6 @@ async function getProjects() {
 
 async function getCertificates() {
   try {
-    // During build time, skip fetch to avoid connection errors
     if (process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE === 'phase-production-build') {
       console.log('⏭️ Skipping certificates fetch during build');
       return [];
