@@ -6,13 +6,15 @@ import { withCors } from '@/lib/cors'
 
 export const GET = withCors(async (request: NextRequest) => {
   try {
+    console.log('🔍 Starting GET /api/projects request')
+
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
     const search = searchParams.get('search') || ''
     const featured = searchParams.get('featured')
 
-    console.log('GET /api/projects with limit:', limit, 'featured:', featured)
+    console.log('📋 Query params - page:', page, 'limit:', limit, 'search:', search, 'featured:', featured)
 
     const where: any = {}
 
@@ -28,6 +30,8 @@ export const GET = withCors(async (request: NextRequest) => {
       where.isFeatured = featured === 'true'
     }
 
+    console.log('🔍 Prisma where clause:', JSON.stringify(where, null, 2))
+
     const [projects, total] = await Promise.all([
       prisma.project.findMany({
         where,
@@ -38,7 +42,9 @@ export const GET = withCors(async (request: NextRequest) => {
       prisma.project.count({ where })
     ])
 
-    return NextResponse.json({
+    console.log('✅ Found', projects.length, 'projects out of', total, 'total')
+
+    const response = {
       projects,
       pagination: {
         page,
@@ -46,9 +52,13 @@ export const GET = withCors(async (request: NextRequest) => {
         total,
         pages: Math.ceil(total / limit)
       }
-    })
+    }
+
+    console.log('📤 Sending response with', projects.length, 'projects')
+    return NextResponse.json(response)
   } catch (error) {
-    console.error('GET projects error:', error)
+    console.error('❌ GET projects error:', error)
+    console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack trace')
     return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 })
   }
 })

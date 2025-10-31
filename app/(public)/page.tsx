@@ -16,21 +16,35 @@ const profileData = {
 
 async function getProjects() {
   try {
+    console.log('🔍 getProjects called, NODE_ENV:', process.env.NODE_ENV, 'NEXT_PHASE:', process.env.NEXT_PHASE);
+
     // During build time, skip fetch to avoid connection errors
     if (process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE === 'phase-production-build') {
       console.log('⏭️ Skipping projects fetch during build');
       return [];
     }
-    const response = await fetch(`${getBaseUrl()}/api/projects?featured=true&limit=3`);
+
+    const baseUrl = getBaseUrl();
+    const url = `${baseUrl}/api/projects?featured=true&limit=3`;
+    console.log('🌐 Fetching projects from:', url);
+
+    const response = await fetch(url);
+    console.log('📡 Response status:', response.status, 'ok:', response.ok);
+
     if (!response.ok) {
-      console.error('❌ Projects fetch failed:', response.status, await response.text());
+      const errorText = await response.text();
+      console.error('❌ Projects fetch failed:', response.status, errorText);
       return [];
     }
+
     const data = await response.json();
-    console.log('✅ Projects fetched:', data.projects?.length || 0);
+    console.log('✅ Projects fetched:', data.projects?.length || 0, 'projects');
+    console.log('📦 Response data keys:', Object.keys(data));
+
     return data.projects?.slice(0, 3) || [];
   } catch (error) {
     console.error('❌ Projects JSON parse or network error:', error);
+    console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack');
     return [];
   }
 }
