@@ -1,8 +1,4 @@
 {
   "buildCommand": "pnpm run build",
-  "installCommand": "pnpm install && pnpm prisma generate",
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "DATABASE_URL_UNPOOLED": "@database_url_unpooled"
-  }
+  "installCommand": "pnpm install && pnpm prisma generate"
 }
