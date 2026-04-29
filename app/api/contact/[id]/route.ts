@@ -3,11 +3,12 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const message = await prisma.contactMessage.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!message) {
@@ -23,9 +24,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
     const { status } = body
 
@@ -43,7 +45,7 @@ export async function PUT(
     }
 
     const message = await prisma.contactMessage.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData
     })
 
@@ -56,11 +58,12 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     await prisma.contactMessage.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ success: true })
