@@ -137,12 +137,6 @@ const SkillsNetwork = () => {
 
   return (
     <div ref={containerRef} className="w-full h-screen bg-background text-white relative">
-      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
-        <button onClick={() => setDebugMode(!debugMode)} className="bg-white text-black px-3 py-1.5 rounded">
-          Debug: {debugMode ? "ON" : "OFF"}
-        </button>
-      </div>
-
       <svg ref={svgRef} viewBox={`0 0 ${dimensions.width} ${dimensions.height}`} className="w-full h-full">
         {/* Links from left */}
         {leftIcons.map((_, i) => {

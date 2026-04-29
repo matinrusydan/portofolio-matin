@@ -7,7 +7,7 @@ import { CertificatesShowcase } from "@/components/certificates/certificates-sho
 import { ProjectShowcaseScroll } from "@/components/ui/project-showcase-scroll"
 import { ContactForm } from "@/components/contact/contact-form"
 import { Suspense } from "react";
-import { getBaseUrl } from "@/lib/api";
+import { prisma } from "@/lib/prisma";
 
 const profileData = {
   name: 'Matin Rusydan',
@@ -18,55 +18,27 @@ const profileData = {
 
 async function getProjects() {
   try {
-    console.log('🔍 getProjects called, NODE_ENV:', process.env.NODE_ENV, 'NEXT_PHASE:', process.env.NEXT_PHASE);
-
-    // During build time, skip fetch to avoid connection errors
-    if (process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE === 'phase-production-build') {
-      console.log('⏭️ Skipping projects fetch during build');
-      return [];
-    }
-
-    const baseUrl = getBaseUrl();
-    const url = `${baseUrl}/api/projects?featured=true&limit=3`;
-    console.log('🌐 Fetching projects from:', url);
-
-    const response = await fetch(url);
-    console.log('📡 Response status:', response.status, 'ok:', response.ok);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ Projects fetch failed:', response.status, errorText);
-      return [];
-    }
-
-    const data = await response.json();
-    console.log('✅ Projects fetched:', data.projects?.length || 0, 'projects');
-    console.log('📦 Response data keys:', Object.keys(data));
-
-    return data.projects?.slice(0, 3) || [];
+    const projects = await prisma.project.findMany({
+      where: { isFeatured: true },
+      take: 3,
+      orderBy: { orderIndex: 'asc' }
+    });
+    return JSON.parse(JSON.stringify(projects));
   } catch (error) {
-    console.error('❌ Projects JSON parse or network error:', error);
-    console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack');
+    console.error('❌ Projects fetch error:', error);
     return [];
   }
 }
 
 async function getCertificates() {
   try {
-    if (process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE === 'phase-production-build') {
-      console.log('⏭️ Skipping certificates fetch during build');
-      return [];
-    }
-    const response = await fetch(`${getBaseUrl()}/api/certificates?featured=true`);
-    if (!response.ok) {
-      console.error('❌ Certificates fetch failed:', response.status, await response.text());
-      return [];
-    }
-    const data = await response.json();
-    console.log('✅ Certificates fetched:', data.certificates?.length || 0);
-    return data.certificates || [];
+    const certificates = await prisma.certificate.findMany({
+      where: { isFeatured: true },
+      orderBy: { orderIndex: 'asc' }
+    });
+    return JSON.parse(JSON.stringify(certificates));
   } catch (error) {
-    console.error('❌ Certificates JSON parse or network error:', error);
+    console.error('❌ Certificates fetch error:', error);
     return [];
   }
 }
