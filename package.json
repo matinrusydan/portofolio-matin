@@ -51,6 +51,7 @@
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.9.1",
     "@vercel/analytics": "latest",
+    "@vercel/blob": "^2.3.3",
     "atropos": "^2.0.2",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",

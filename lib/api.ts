@@ -22,5 +22,7 @@ export const apiEndpoints = {
 };
 
 export const getUploadUrl = (filename: string): string => {
+  if (filename.startsWith('http')) return filename;
+  if (filename.startsWith('/uploads/')) return `${BASE_URL}${filename}`;
   return `${BASE_URL}/uploads/${filename}`;
 };
